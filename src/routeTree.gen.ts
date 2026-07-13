@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StyleDnaRouteImport } from './routes/style-dna'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as AiStudioRouteImport } from './routes/ai-studio'
 import { Route as IndexRouteImport } from './routes/index'
 
+const StyleDnaRoute = StyleDnaRouteImport.update({
+  id: '/style-dna',
+  path: '/style-dna',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiStudioRoute = AiStudioRouteImport.update({
+  id: '/ai-studio',
+  path: '/ai-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-studio': typeof AiStudioRoute
+  '/gallery': typeof GalleryRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/pricing': typeof PricingRoute
+  '/style-dna': typeof StyleDnaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-studio': typeof AiStudioRoute
+  '/gallery': typeof GalleryRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/pricing': typeof PricingRoute
+  '/style-dna': typeof StyleDnaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-studio': typeof AiStudioRoute
+  '/gallery': typeof GalleryRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/pricing': typeof PricingRoute
+  '/style-dna': typeof StyleDnaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ai-studio'
+    | '/gallery'
+    | '/how-it-works'
+    | '/marketplace'
+    | '/pricing'
+    | '/style-dna'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ai-studio'
+    | '/gallery'
+    | '/how-it-works'
+    | '/marketplace'
+    | '/pricing'
+    | '/style-dna'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-studio'
+    | '/gallery'
+    | '/how-it-works'
+    | '/marketplace'
+    | '/pricing'
+    | '/style-dna'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiStudioRoute: typeof AiStudioRoute
+  GalleryRoute: typeof GalleryRoute
+  HowItWorksRoute: typeof HowItWorksRoute
+  MarketplaceRoute: typeof MarketplaceRoute
+  PricingRoute: typeof PricingRoute
+  StyleDnaRoute: typeof StyleDnaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/style-dna': {
+      id: '/style-dna'
+      path: '/style-dna'
+      fullPath: '/style-dna'
+      preLoaderRoute: typeof StyleDnaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-studio': {
+      id: '/ai-studio'
+      path: '/ai-studio'
+      fullPath: '/ai-studio'
+      preLoaderRoute: typeof AiStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +177,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiStudioRoute: AiStudioRoute,
+  GalleryRoute: GalleryRoute,
+  HowItWorksRoute: HowItWorksRoute,
+  MarketplaceRoute: MarketplaceRoute,
+  PricingRoute: PricingRoute,
+  StyleDnaRoute: StyleDnaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
