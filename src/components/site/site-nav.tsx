@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -13,6 +14,7 @@ const NAV_LINKS = [
 
 export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 12);
@@ -21,20 +23,24 @@ export function SiteNav() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   return (
     <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-4">
       <nav
         className={`flex w-full max-w-6xl items-center justify-between gap-6 rounded-full border border-border px-3 py-2 pl-6 backdrop-blur-xl transition-all duration-500 ${
-          scrolled
-            ? "bg-background/85 shadow-elegant"
-            : "bg-background/60 shadow-none"
+          scrolled ? "bg-background/85 shadow-elegant" : "bg-background/60 shadow-none"
         }`}
       >
         <Link to="/" className="flex items-center gap-2">
           <PrismMark />
-          <span className="font-display text-xl italic tracking-tight">
-            Palette Print
-          </span>
+          <span className="font-display text-xl italic tracking-tight">Palette Print</span>
         </Link>
 
         <div className="hidden items-center gap-1 lg:flex">
@@ -54,15 +60,29 @@ export function SiteNav() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="hidden text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground sm:block">
-            Sign In
-          </button>
-          <Link
-            to="/style-dna"
-            className="rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-all hover:bg-accent hover:shadow-glow"
-          >
-            Get Started
-          </Link>
+          {signedIn ? (
+            <Link
+              to="/profile"
+              className="rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-all hover:bg-accent hover:shadow-glow"
+            >
+              Account
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/auth"
+                className="hidden text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/auth"
+                className="rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-all hover:bg-accent hover:shadow-glow"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </header>
