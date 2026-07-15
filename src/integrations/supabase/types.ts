@@ -14,16 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dna_profiles: {
+        Row: {
+          archived: boolean
+          confidence: number | null
+          created_at: string
+          fingerprint: Json | null
+          id: string
+          is_favorite: boolean
+          mood: Json | null
+          name: string
+          palette: Json | null
+          style_name: string | null
+          summary: string | null
+          tags: string[] | null
+          typography: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived?: boolean
+          confidence?: number | null
+          created_at?: string
+          fingerprint?: Json | null
+          id?: string
+          is_favorite?: boolean
+          mood?: Json | null
+          name: string
+          palette?: Json | null
+          style_name?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          typography?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived?: boolean
+          confidence?: number | null
+          created_at?: string
+          fingerprint?: Json | null
+          id?: string
+          is_favorite?: boolean
+          mood?: Json | null
+          name?: string
+          palette?: Json | null
+          style_name?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          typography?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      inspiration_images: {
+        Row: {
+          created_at: string
+          dna_profile_id: string
+          id: string
+          position: number
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dna_profile_id: string
+          id?: string
+          position: number
+          storage_path: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dna_profile_id?: string
+          id?: string
+          position?: number
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspiration_images_dna_profile_id_fkey"
+            columns: ["dna_profile_id"]
+            isOneToOne: false
+            referencedRelation: "dna_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          credits: number
+          full_name: string | null
+          id: string
+          plan: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          credits?: number
+          full_name?: string | null
+          id: string
+          plan?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          credits?: number
+          full_name?: string | null
+          id?: string
+          plan?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          archived: boolean
+          created_at: string
+          data: Json | null
+          dna_profile_id: string | null
+          id: string
+          kind: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived?: boolean
+          created_at?: string
+          data?: Json | null
+          dna_profile_id?: string | null
+          id?: string
+          kind: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived?: boolean
+          created_at?: string
+          data?: Json | null
+          dna_profile_id?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_dna_profile_id_fkey"
+            columns: ["dna_profile_id"]
+            isOneToOne: false
+            referencedRelation: "dna_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +342,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
