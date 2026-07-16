@@ -258,7 +258,9 @@ export const updateProject = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    const patch: { updated_at: string; name?: string; data?: Record<string, unknown> } = {
+      updated_at: new Date().toISOString(),
+    };
     if (data.name) patch.name = data.name;
     if (data.data) patch.data = data.data;
     const { error } = await context.supabase.from("projects").update(patch).eq("id", data.id);
