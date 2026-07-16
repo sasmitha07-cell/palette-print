@@ -18,6 +18,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiStudioRouteImport } from './routes/ai-studio'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiAiImageRouteImport } from './routes/api/ai-image'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 
 const StyleDnaRoute = StyleDnaRouteImport.update({
@@ -64,6 +65,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAiImageRoute = ApiAiImageRouteImport.update({
+  id: '/api/ai-image',
+  path: '/api/ai-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/style-dna': typeof StyleDnaRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/api/ai-image': typeof ApiAiImageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/style-dna': typeof StyleDnaRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/api/ai-image': typeof ApiAiImageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/style-dna': typeof StyleDnaRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/api/ai-image': typeof ApiAiImageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/style-dna'
     | '/profile'
+    | '/api/ai-image'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/style-dna'
     | '/profile'
+    | '/api/ai-image'
   id:
     | '__root__'
     | '/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/style-dna'
     | '/_authenticated/profile'
+    | '/api/ai-image'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   PricingRoute: typeof PricingRoute
   StyleDnaRoute: typeof StyleDnaRoute
+  ApiAiImageRoute: typeof ApiAiImageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -219,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ai-image': {
+      id: '/api/ai-image'
+      path: '/api/ai-image'
+      fullPath: '/api/ai-image'
+      preLoaderRoute: typeof ApiAiImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -250,6 +270,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   PricingRoute: PricingRoute,
   StyleDnaRoute: StyleDnaRoute,
+  ApiAiImageRoute: ApiAiImageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
