@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -64,11 +63,17 @@ function AuthPage() {
   const google = async () => {
     setLoading(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
-      if (result.error) throw result.error;
-      if (result.redirected) return;
+      if (error) throw error;
+      if (data?.url) {
+        window.location.assign(data.url);
+        return;
+      }
       router.invalidate();
       navigate({ to: "/profile", replace: true });
     } catch (err) {
@@ -153,9 +158,7 @@ function AuthPage() {
         onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
         className="mt-6 text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
-        {mode === "signup"
-          ? "Already have an account? Sign in"
-          : "New here? Create an account"}
+        {mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
       </button>
     </div>
   );

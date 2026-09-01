@@ -1,4 +1,4 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 
@@ -213,11 +213,7 @@
     pointer-events: none;
     opacity: 0.4;
     mix-blend-mode: multiply;
-    background-image: radial-gradient(
-      circle at 1px 1px,
-      rgba(26, 25, 24, 0.06) 1px,
-      transparent 0
-    );
+    background-image: radial-gradient(circle at 1px 1px, rgba(26, 25, 24, 0.06) 1px, transparent 0);
     background-size: 3px 3px;
   }
 }

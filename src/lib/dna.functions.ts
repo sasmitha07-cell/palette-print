@@ -72,10 +72,7 @@ export const updateProfile = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("profiles")
-      .update(data)
-      .eq("id", context.userId);
+    const { error } = await context.supabase.from("profiles").update(data).eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

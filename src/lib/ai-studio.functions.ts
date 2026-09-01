@@ -2,12 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const GATEWAY_URL = process.env.PALETTE_PRINT_AI_GATEWAY_URL;
 const MODEL = "google/gemini-3.5-flash";
 
 async function callChatJson(system: string, user: string): Promise<any> {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("Missing LOVABLE_API_KEY");
+  const key = process.env.PALETTE_PRINT_AI_API_KEY;
+  if (!key) throw new Error("Missing PALETTE_PRINT_AI_API_KEY");
+  if (!GATEWAY_URL) throw new Error("Missing PALETTE_PRINT_AI_GATEWAY_URL");
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
     headers: {
@@ -17,15 +18,20 @@ async function callChatJson(system: string, user: string): Promise<any> {
     body: JSON.stringify({
       model: MODEL,
       messages: [
-        { role: "system", content: system + "\n\nReturn ONLY valid minified JSON. No markdown, no code fences." },
+        {
+          role: "system",
+          content: system + "\n\nReturn ONLY valid minified JSON. No markdown, no code fences.",
+        },
         { role: "user", content: user },
       ],
       response_format: { type: "json_object" },
     }),
   });
   if (res.status === 429) throw new Error("Rate limit exceeded — please retry shortly.");
-  if (res.status === 402) throw new Error("AI credits exhausted. Add credits in your workspace billing.");
-  if (!res.ok) throw new Error(`AI gateway error: ${res.status} ${await res.text().catch(() => "")}`);
+  if (res.status === 402)
+    throw new Error("AI credits exhausted. Add credits in your workspace billing.");
+  if (!res.ok)
+    throw new Error(`AI gateway error: ${res.status} ${await res.text().catch(() => "")}`);
   const data = await res.json();
   const content: string = data?.choices?.[0]?.message?.content ?? "{}";
   try {
@@ -36,9 +42,13 @@ async function callChatJson(system: string, user: string): Promise<any> {
   }
 }
 
-async function callChatText(system: string, messages: { role: "user" | "assistant"; content: string }[]): Promise<string> {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("Missing LOVABLE_API_KEY");
+async function callChatText(
+  system: string,
+  messages: { role: "user" | "assistant"; content: string }[],
+): Promise<string> {
+  const key = process.env.PALETTE_PRINT_AI_API_KEY;
+  if (!key) throw new Error("Missing PALETTE_PRINT_AI_API_KEY");
+  if (!GATEWAY_URL) throw new Error("Missing PALETTE_PRINT_AI_GATEWAY_URL");
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
     headers: {
@@ -51,7 +61,8 @@ async function callChatText(system: string, messages: { role: "user" | "assistan
     }),
   });
   if (res.status === 429) throw new Error("Rate limit exceeded — please retry shortly.");
-  if (res.status === 402) throw new Error("AI credits exhausted. Add credits in your workspace billing.");
+  if (res.status === 402)
+    throw new Error("AI credits exhausted. Add credits in your workspace billing.");
   if (!res.ok) throw new Error(`AI gateway error: ${res.status}`);
   const data = await res.json();
   return data?.choices?.[0]?.message?.content ?? "";
@@ -75,7 +86,13 @@ const SurfaceEnum = z.enum(["web", "brand", "logo", "social", "portfolio", "deck
 export const generateConcepts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ dna: DnaSchema, surface: SurfaceEnum, count: z.number().min(1).max(12).default(10) }).parse(input),
+    z
+      .object({
+        dna: DnaSchema,
+        surface: SurfaceEnum,
+        count: z.number().min(1).max(12).default(10),
+      })
+      .parse(input),
   )
   .handler(async ({ data }) => {
     const surfaceMap: Record<string, string> = {
@@ -97,7 +114,9 @@ export const chatWithDna = createServerFn({ method: "POST" })
     z
       .object({
         dna: DnaSchema,
-        messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() })).min(1),
+        messages: z
+          .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() }))
+          .min(1),
       })
       .parse(input),
   )
@@ -131,7 +150,9 @@ export const critiqueDesign = createServerFn({ method: "POST" })
 
 export const generateBrandKit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ dna: DnaSchema, brand_name: z.string().optional() }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ dna: DnaSchema, brand_name: z.string().optional() }).parse(input),
+  )
   .handler(async ({ data }) => {
     const system = `You are a brand systems designer. Produce a complete brand kit anchored to the given DNA.`;
     const user = `DNA: ${JSON.stringify(data.dna)}\nBrand name: ${data.brand_name ?? "Unnamed Brand"}\n\nReturn JSON: {"logo_direction","color_system":[{"name","hex","use"}],"typography":{"display","body","pairing_notes"},"icon_style","illustration_style","photography_style","brand_voice","brand_personality"}`;
@@ -172,7 +193,9 @@ export const generateRemix = createServerFn({ method: "POST" })
 
 export const generateMoodboardPrompts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ dna: DnaSchema, theme: z.string().optional() }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ dna: DnaSchema, theme: z.string().optional() }).parse(input),
+  )
   .handler(async ({ data }) => {
     const system = `You are a moodboard curator. Produce 18 short image prompts (each 8-14 words) that together form a cohesive moodboard for the user's DNA.`;
     const user = `DNA: ${JSON.stringify(data.dna)}\nTheme: ${data.theme ?? "signature"}\n\nReturn JSON: {"prompts":["..." x 18]}`;
@@ -263,7 +286,10 @@ export const updateProject = createServerFn({ method: "POST" })
     };
     if (data.name) patch.name = data.name;
     if (data.data) patch.data = data.data;
-    const { error } = await context.supabase.from("projects").update(patch as never).eq("id", data.id);
+    const { error } = await context.supabase
+      .from("projects")
+      .update(patch as never)
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

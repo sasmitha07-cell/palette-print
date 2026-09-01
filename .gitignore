@@ -1,32 +1,97 @@
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Production & Build Outputs
+dist/
+dist-ssr/
+build/
+out/
+.output/
+.vinxi/
+.tanstack/**
+.nitro/
+*.local
+
+# Vite & Bundler Caches
+.vite/
+.turbo/
+.cache/
+.parcel-cache/
+
+# Cloudflare / Serverless / Edge
+.wrangler/
+.dev.vars
+
+# Supabase Local Temp & Config
+.supabase/
+supabase/.temp/
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+bun.lockb.log*
 
-node_modules
-dist
-dist-ssr
-.output
-.vinxi
-.tanstack/**
-.nitro
-*.local
+# Testing & Coverage
+coverage/
+.nyc_output/
+playwright-report/
+blob-report/
+test-results/
 
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
+# Temporary tree / Diagnostic Dumps
+*_tree.txt
+project_tree.txt
+src_tree.txt
+supabase_tree.txt
 
-# Editor directories and files
+# Editor Directories and Files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.sublime-project
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.tmp
+*.bak

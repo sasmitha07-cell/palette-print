@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteNav } from "@/components/site/site-nav";
 import { SiteFooter } from "@/components/site/site-footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,9 +22,7 @@ function NotFoundComponent() {
         <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
           Error 404 · Signal lost
         </p>
-        <h1 className="mt-6 font-display text-7xl italic text-foreground">
-          Off the palette
-        </h1>
+        <h1 className="mt-6 font-display text-7xl italic text-foreground">Off the palette</h1>
         <p className="mt-4 text-sm text-muted-foreground">
           The page you're looking for slipped between the pigments.
         </p>
@@ -45,9 +42,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -103,8 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Palette Print" },
       {
         name: "twitter:description",
-        content:
-          "AI creative intelligence — from inspiration to generated design systems.",
+        content: "AI creative intelligence — from inspiration to generated design systems.",
       },
     ],
     links: [

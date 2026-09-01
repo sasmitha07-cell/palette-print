@@ -125,10 +125,7 @@ function useSavedAssets() {
   }, []);
   const save = useCallback((a: Omit<SavedAsset, "id" | "createdAt">) => {
     setAssets((prev) => {
-      const next = [
-        { ...a, id: crypto.randomUUID(), createdAt: Date.now() },
-        ...prev,
-      ];
+      const next = [{ ...a, id: crypto.randomUUID(), createdAt: Date.now() }, ...prev];
       localStorage.setItem("pp:saved-assets", JSON.stringify(next));
       toast.success("Saved to My Assets");
       return next;
@@ -186,7 +183,10 @@ function AiStudioPage() {
               {dna.style_name}
             </span>
             {dna.tags.slice(0, 4).map((t) => (
-              <span key={t} className="rounded-full border border-border bg-background px-3 py-1 text-muted-foreground">
+              <span
+                key={t}
+                className="rounded-full border border-border bg-background px-3 py-1 text-muted-foreground"
+              >
                 {t}
               </span>
             ))}
@@ -245,7 +245,11 @@ function ApplyMyDna({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Apply My DNA"
-          title={<>Six surfaces, <em>ten concepts each</em></>}
+          title={
+            <>
+              Six surfaces, <em>ten concepts each</em>
+            </>
+          }
           description="Pick a surface. We'll generate ten unique creative concepts anchored to your Style DNA."
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -254,7 +258,9 @@ function ApplyMyDna({
               key={s.key}
               onClick={() => load(s.key)}
               className={`group text-left rounded-2xl border p-6 transition-all ${
-                active === s.key ? "border-accent bg-bone/60" : "border-border bg-card hover:border-accent"
+                active === s.key
+                  ? "border-accent bg-bone/60"
+                  : "border-border bg-card hover:border-accent"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -269,7 +275,9 @@ function ApplyMyDna({
               </div>
               <p className="mt-6 font-display text-2xl italic">{s.title}</p>
               <p className="mt-2 text-xs text-muted-foreground">
-                {active === s.key && concepts.length ? `${concepts.length} concepts ready` : "Generate 10 concepts"}
+                {active === s.key && concepts.length
+                  ? `${concepts.length} concepts ready`
+                  : "Generate 10 concepts"}
               </p>
             </button>
           ))}
@@ -310,7 +318,9 @@ function ApplyMyDna({
                       Concept {String(i + 1).padStart(2, "0")}
                     </span>
                     <p className="mt-3 font-display text-xl italic">{c.name}</p>
-                    <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{c.description}</p>
+                    <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
+                      {c.description}
+                    </p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       <button
                         onClick={() => setDetail(c)}
@@ -476,7 +486,11 @@ function ConceptDetail({
                       </button>
                       <button
                         onClick={() =>
-                          onSave({ type: "image", title: concept.name, payload: { dataUrl: img, concept } })
+                          onSave({
+                            type: "image",
+                            title: concept.name,
+                            payload: { dataUrl: img, concept },
+                          })
                         }
                         className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:border-accent"
                       >
@@ -549,7 +563,8 @@ function DnaChat({ dna }: { dna: typeof DEFAULT_DNA }) {
             Talk to your <em className="text-accent">Creative Director</em>
           </h3>
           <p className="mt-4 text-sm text-muted-foreground">
-            Trained on your palette, typography, mood, and fingerprint. Every reply anchors to your DNA.
+            Trained on your palette, typography, mood, and fingerprint. Every reply anchors to your
+            DNA.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             {suggestions.map((s) => (
@@ -652,7 +667,11 @@ function MoodboardGenerator({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Moodboard"
-          title={<>Generate a <em>living moodboard</em></>}
+          title={
+            <>
+              Generate a <em>living moodboard</em>
+            </>
+          }
           description="Eighteen visual directions extracted from your DNA. Click any tile to render it."
         />
         <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -679,7 +698,9 @@ function MoodboardGenerator({
                 Export
               </button>
               <button
-                onClick={() => onSave({ type: "moodboard", title: theme || "Moodboard", payload: { prompts } })}
+                onClick={() =>
+                  onSave({ type: "moodboard", title: theme || "Moodboard", payload: { prompts } })
+                }
                 className="rounded-full border border-border bg-background px-4 py-2.5 text-xs font-medium hover:border-accent"
               >
                 Save
@@ -795,9 +816,7 @@ function StyleRemixLab({
             </div>
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-accent">Remix</p>
-              <p className="mt-2 font-display text-xl italic">
-                {result?.style_name ?? "—"}
-              </p>
+              <p className="mt-2 font-display text-xl italic">{result?.style_name ?? "—"}</p>
               {result?.palette && (
                 <div className="mt-3 flex gap-1">
                   {(result.palette as { hex: string }[]).map((p, i) => (
@@ -818,7 +837,9 @@ function StyleRemixLab({
                 </ul>
               )}
               <button
-                onClick={() => onSave({ type: "brandkit", title: result.style_name, payload: result })}
+                onClick={() =>
+                  onSave({ type: "brandkit", title: result.style_name, payload: result })
+                }
                 className="mt-6 rounded-full border border-border px-4 py-2 text-xs font-medium hover:border-accent"
               >
                 Save remix
@@ -863,7 +884,11 @@ function BrandKitGenerator({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Brand Kit"
-          title={<>Complete <em>brand systems</em></>}
+          title={
+            <>
+              Complete <em>brand systems</em>
+            </>
+          }
           description="Logo direction, color system, typography, icons, illustration, photography, voice and personality."
         />
         <div className="mt-8 flex flex-wrap gap-3">
@@ -893,7 +918,9 @@ function BrandKitGenerator({
             <KitCard title="Brand personality" body={kit.brand_personality} />
             {kit.typography && (
               <div className="rounded-2xl border border-border bg-card p-6 md:col-span-2 lg:col-span-3">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">Typography</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  Typography
+                </p>
                 <p className="mt-2 text-sm">
                   <strong>Display:</strong> {kit.typography.display} · <strong>Body:</strong>{" "}
                   {kit.typography.body}
@@ -903,7 +930,9 @@ function BrandKitGenerator({
             )}
             {kit.color_system && (
               <div className="rounded-2xl border border-border bg-card p-6 md:col-span-2 lg:col-span-3">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">Color system</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  Color system
+                </p>
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                   {(kit.color_system as any[]).map((c, i) => (
                     <div key={i} className="rounded-xl border border-border p-3">
@@ -918,7 +947,9 @@ function BrandKitGenerator({
             )}
             <div className="md:col-span-2 lg:col-span-3 flex gap-2">
               <button
-                onClick={() => onSave({ type: "brandkit", title: name || "Brand Kit", payload: kit })}
+                onClick={() =>
+                  onSave({ type: "brandkit", title: name || "Brand Kit", payload: kit })
+                }
                 className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:border-accent"
               >
                 Save
@@ -981,7 +1012,11 @@ function SocialGenerator({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Social Studio"
-          title={<>Content <em>in your voice</em></>}
+          title={
+            <>
+              Content <em>in your voice</em>
+            </>
+          }
         />
         <div className="mt-8 flex flex-wrap items-center gap-2">
           {PLATFORMS.map((p) => (
@@ -989,7 +1024,9 @@ function SocialGenerator({
               key={p}
               onClick={() => setPlatform(p)}
               className={`rounded-full px-4 py-2 text-xs font-medium capitalize ${
-                platform === p ? "bg-foreground text-background" : "border border-border bg-background"
+                platform === p
+                  ? "bg-foreground text-background"
+                  : "border border-border bg-background"
               }`}
             >
               {p}
@@ -1000,7 +1037,11 @@ function SocialGenerator({
             disabled={busy}
             className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-medium text-accent-foreground disabled:opacity-50"
           >
-            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+            {busy ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="size-3.5" />
+            )}
             Generate 10
           </button>
         </div>
@@ -1014,7 +1055,9 @@ function SocialGenerator({
                     {c.type ?? "Post"}
                   </span>
                   <button
-                    onClick={() => onSave({ type: "concept", title: c.title ?? "Post", payload: c })}
+                    onClick={() =>
+                      onSave({ type: "concept", title: c.title ?? "Post", payload: c })
+                    }
                     className="text-xs text-muted-foreground hover:text-accent"
                   >
                     Save
@@ -1067,7 +1110,11 @@ function CritiqueTool({ dna }: { dna: typeof DEFAULT_DNA }) {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Design Critique"
-          title={<>DNA <em>Match Checker</em></>}
+          title={
+            <>
+              DNA <em>Match Checker</em>
+            </>
+          }
           description="Describe or paste details of a design. We'll score how well it matches your Style DNA."
         />
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr,1.2fr]">
@@ -1091,7 +1138,9 @@ function CritiqueTool({ dna }: { dna: typeof DEFAULT_DNA }) {
           <div className="rounded-3xl border border-border bg-card p-8">
             {result ? (
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">DNA Match</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  DNA Match
+                </p>
                 <p className="mt-2 font-display text-6xl italic">{result.overall}%</p>
                 {result.scores && (
                   <div className="mt-6 space-y-3">
@@ -1170,7 +1219,11 @@ function WebsiteGenerator({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Website Generator"
-          title={<>Structure <em>a full site</em></>}
+          title={
+            <>
+              Structure <em>a full site</em>
+            </>
+          }
           description="Pick a type. We'll generate hero, features, testimonials, CTA and footer aligned with your DNA."
         />
         <div className="mt-8 flex flex-wrap items-center gap-2">
@@ -1190,7 +1243,11 @@ function WebsiteGenerator({
             disabled={busy}
             className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-medium text-accent-foreground disabled:opacity-50"
           >
-            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+            {busy ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="size-3.5" />
+            )}
             Generate site
           </button>
         </div>
@@ -1203,13 +1260,16 @@ function WebsiteGenerator({
                 <p className="mt-3 font-display text-3xl italic">{site.hero.headline}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{site.hero.subhead}</p>
                 <p className="mt-3 text-xs">
-                  <strong>CTA:</strong> {site.hero.cta} · <strong>Visual:</strong> {site.hero.visual}
+                  <strong>CTA:</strong> {site.hero.cta} · <strong>Visual:</strong>{" "}
+                  {site.hero.visual}
                 </p>
               </div>
             )}
             {site.features && (
               <div className="rounded-2xl border border-border bg-background p-6">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">Features</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  Features
+                </p>
                 <ul className="mt-3 space-y-3">
                   {(site.features as any[]).map((f, i) => (
                     <li key={i}>
@@ -1222,7 +1282,9 @@ function WebsiteGenerator({
             )}
             {site.testimonials && (
               <div className="rounded-2xl border border-border bg-background p-6">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">Testimonials</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  Testimonials
+                </p>
                 <ul className="mt-3 space-y-3">
                   {(site.testimonials as any[]).map((t, i) => (
                     <li key={i}>
@@ -1243,7 +1305,9 @@ function WebsiteGenerator({
             )}
             {site.footer?.columns && (
               <div className="rounded-2xl border border-border bg-background p-6">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">Footer</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  Footer
+                </p>
                 <div className="mt-3 grid grid-cols-2 gap-3">
                   {(site.footer.columns as any[]).map((c, i) => (
                     <div key={i}>
@@ -1324,7 +1388,11 @@ function BriefCenter({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Creative Briefs"
-          title={<>Generated briefs, <em>export-ready</em></>}
+          title={
+            <>
+              Generated briefs, <em>export-ready</em>
+            </>
+          }
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {BRIEFS.map((b, i) => (
@@ -1332,7 +1400,9 @@ function BriefCenter({
               key={b}
               onClick={() => run(b)}
               className={`group rounded-2xl border p-6 text-left transition-all ${
-                active === b ? "border-accent bg-bone/60" : "border-border bg-card hover:border-accent"
+                active === b
+                  ? "border-accent bg-bone/60"
+                  : "border-border bg-card hover:border-accent"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -1353,9 +1423,7 @@ function BriefCenter({
 
         {brief && (
           <div className="mt-8 rounded-3xl border border-border bg-background p-8">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
-              {active}
-            </p>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-accent">{active}</p>
             <h3 className="mt-2 font-display text-3xl italic">{brief.title}</h3>
             <p className="mt-3 text-sm text-muted-foreground">{brief.summary}</p>
             <div className="mt-6 space-y-4">
@@ -1399,7 +1467,6 @@ const PROMPT_TARGETS = [
   "Midjourney",
   "Flux",
   "Stable Diffusion",
-  "Lovable",
   "Cursor",
   "V0",
   "Bolt",
@@ -1439,7 +1506,11 @@ function PromptLibrary({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Prompt Library"
-          title={<>Prompts tuned to <em>your voice</em></>}
+          title={
+            <>
+              Prompts tuned to <em>your voice</em>
+            </>
+          }
         />
         <div className="mt-8 flex flex-wrap items-center gap-2">
           {PROMPT_TARGETS.map((t) => (
@@ -1447,7 +1518,9 @@ function PromptLibrary({
               key={t}
               onClick={() => setTarget(t)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-                target === t ? "bg-foreground text-background" : "border border-border bg-background"
+                target === t
+                  ? "bg-foreground text-background"
+                  : "border border-border bg-background"
               }`}
             >
               {t}
@@ -1458,7 +1531,11 @@ function PromptLibrary({
             disabled={busy}
             className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-medium text-accent-foreground disabled:opacity-50"
           >
-            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+            {busy ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="size-3.5" />
+            )}
             Generate
           </button>
         </div>
@@ -1472,7 +1549,10 @@ function PromptLibrary({
                     {p.tag}
                   </span>
                   <div className="flex gap-2">
-                    <button onClick={() => copy(p.text)} className="text-muted-foreground hover:text-accent">
+                    <button
+                      onClick={() => copy(p.text)}
+                      className="text-muted-foreground hover:text-accent"
+                    >
                       <Copy className="size-4" />
                     </button>
                     <button
@@ -1557,7 +1637,11 @@ function ProjectWorkspace() {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Projects"
-          title={<>Your <em>creative workspace</em></>}
+          title={
+            <>
+              Your <em>creative workspace</em>
+            </>
+          }
           description="Group concepts, moodboards, briefs and chats into named projects."
         />
         <div className="mt-8 flex gap-3">
@@ -1615,13 +1699,7 @@ function ProjectWorkspace() {
 // ============================================================
 // SECTION 14 — My Assets (saved locally)
 // ============================================================
-function MyAssets({
-  assets,
-  onRemove,
-}: {
-  assets: SavedAsset[];
-  onRemove: (id: string) => void;
-}) {
+function MyAssets({ assets, onRemove }: { assets: SavedAsset[]; onRemove: (id: string) => void }) {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
 
@@ -1638,7 +1716,11 @@ function MyAssets({
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="My Assets"
-          title={<>Saved <em>work</em></>}
+          title={
+            <>
+              Saved <em>work</em>
+            </>
+          }
           description="Everything you save across AI Studio is stored here in your browser."
         />
         <div className="mt-8 flex flex-wrap items-center gap-2">
@@ -1647,7 +1729,9 @@ function MyAssets({
               key={t}
               onClick={() => setFilter(t)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium capitalize ${
-                filter === t ? "bg-foreground text-background" : "border border-border bg-background"
+                filter === t
+                  ? "bg-foreground text-background"
+                  : "border border-border bg-background"
               }`}
             >
               {t}

@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
+import { generateStyleDNA, type StyleDNA } from "@/lib/style-dna-engine";
+import { fileToBase64 } from "@/lib/file-to-base64";
+import { analyzeImage } from "@/lib/vision-analysis";
 import {
   ArrowRight,
   Check,
@@ -61,72 +64,65 @@ const STAGES = [
 ];
 
 // ---------- DNA (mock, derived from images) ----------
-const DNA = {
-  name: "Editorial Modernist",
-  confidence: 94,
-  theme: "Warm Editorial Minimalism",
-  personality: "Thoughtful curator with a tactile, print-first sensibility",
-  energy: "Calm · Considered · Confident",
-  tags: [
-    "Serif Heavy",
-    "Warm Neutral",
-    "Asymmetric",
-    "Tactile",
-    "Grid Native",
-    "Print DNA",
-  ],
-  palette: [
-    { hex: "#fdfcf8", name: "Bone" },
-    { hex: "#f5f1e9", name: "Oat" },
-    { hex: "#e2d5c0", name: "Clay" },
-    { hex: "#cf5a3c", name: "Terracotta" },
-    { hex: "#7a8b6f", name: "Sage" },
-    { hex: "#1a1918", name: "Ink" },
-  ],
-  harmony: "Split-complementary · warm dominant with sage accent",
-  gradients: [
-    "linear-gradient(135deg, #fdfcf8, #e2d5c0)",
-    "linear-gradient(135deg, #cf5a3c, #7a2f1d)",
-    "linear-gradient(135deg, #7a8b6f, #f5f1e9)",
-  ],
-  typography: {
-    display: {
-      name: "Cormorant Garamond",
-      style: "High-contrast transitional serif, italic-forward",
-    },
-    body: {
-      name: "Inter",
-      style: "Neutral geometric sans, optical sizing on for editorial rhythm",
-    },
-    pairings: [
-      "Cormorant Garamond × Inter",
-      "GT Sectra × Söhne",
-      "Tiempos Headline × Suisse Int'l",
-    ],
-  },
-  mood: [
-    { label: "Minimalist", value: 82 },
-    { label: "Luxury", value: 71 },
-    { label: "Futuristic", value: 24 },
-    { label: "Creative", value: 88 },
-    { label: "Professional", value: 76 },
-    { label: "Experimental", value: 44 },
-  ],
-  fingerprint: [
-    { label: "Complexity", value: 42 },
-    { label: "Motion", value: 30 },
-    { label: "Density", value: 55 },
-    { label: "Contrast", value: 78 },
-    { label: "Warmth", value: 86 },
-    { label: "Ornament", value: 34 },
-  ],
-  twins: [
-    { name: "Aesop", match: 92, note: "Restrained typography, tactile warmth" },
-    { name: "The New York Times Magazine", match: 88, note: "Editorial grid & italic serifs" },
-    { name: "Kinfolk", match: 84, note: "Muted palette, negative space" },
-    { name: "Are.na", match: 79, note: "Utilitarian grid, quiet UI" },
-  ],
-};
+// const DNA = {
+//   name: "Editorial Modernist",
+//   confidence: 94,
+//   theme: "Warm Editorial Minimalism",
+//   personality: "Thoughtful curator with a tactile, print-first sensibility",
+//   energy: "Calm · Considered · Confident",
+//   tags: ["Serif Heavy", "Warm Neutral", "Asymmetric", "Tactile", "Grid Native", "Print DNA"],
+//   palette: [
+//     { hex: "#fdfcf8", name: "Bone" },
+//     { hex: "#f5f1e9", name: "Oat" },
+//     { hex: "#e2d5c0", name: "Clay" },
+//     { hex: "#cf5a3c", name: "Terracotta" },
+//     { hex: "#7a8b6f", name: "Sage" },
+//     { hex: "#1a1918", name: "Ink" },
+//   ],
+//   harmony: "Split-complementary · warm dominant with sage accent",
+//   gradients: [
+//     "linear-gradient(135deg, #fdfcf8, #e2d5c0)",
+//     "linear-gradient(135deg, #cf5a3c, #7a2f1d)",
+//     "linear-gradient(135deg, #7a8b6f, #f5f1e9)",
+//   ],
+//   typography: {
+//     display: {
+//       name: "Cormorant Garamond",
+//       style: "High-contrast transitional serif, italic-forward",
+//     },
+//     body: {
+//       name: "Inter",
+//       style: "Neutral geometric sans, optical sizing on for editorial rhythm",
+//     },
+//     pairings: [
+//       "Cormorant Garamond × Inter",
+//       "GT Sectra × Söhne",
+//       "Tiempos Headline × Suisse Int'l",
+//     ],
+//   },
+//   mood: [
+//     { label: "Minimalist", value: 82 },
+//     { label: "Luxury", value: 71 },
+//     { label: "Futuristic", value: 24 },
+//     { label: "Creative", value: 88 },
+//     { label: "Professional", value: 76 },
+//     { label: "Experimental", value: 44 },
+//   ],
+//   fingerprint: [
+//     { label: "Complexity", value: 42 },
+//     { label: "Motion", value: 30 },
+//     { label: "Density", value: 55 },
+//     { label: "Contrast", value: 78 },
+//     { label: "Warmth", value: 86 },
+//     { label: "Ornament", value: 34 },
+//   ],
+//   twins: [
+//     { name: "Aesop", match: 92, note: "Restrained typography, tactile warmth" },
+//     { name: "The New York Times Magazine", match: 88, note: "Editorial grid & italic serifs" },
+//     { name: "Kinfolk", match: 84, note: "Muted palette, negative space" },
+//     { name: "Are.na", match: 79, note: "Utilitarian grid, quiet UI" },
+//   ],
+// };
 
 const SURFACES = [
   { key: "web", title: "Website Design", eyebrow: "Surface 01" },
@@ -141,67 +137,239 @@ type SurfaceKey = (typeof SURFACES)[number]["key"];
 
 const IDEAS: Record<SurfaceKey, { name: string; description: string; rationale: string }[]> = {
   web: buildIdeas("Website", [
-    ["Editorial Journal", "Long-form magazine layout with anchored serif drop caps.", "Mirrors your print DNA and high-contrast serif signal."],
-    ["Curator Grid", "Asymmetric card grid with generous margins and italic headings.", "Uses your asymmetric composition score of 78%."],
-    ["Quiet Portfolio", "Single-column scroll with drifting terracotta accents.", "Amplifies negative space, matches Calm energy profile."],
-    ["Atelier Landing", "Split hero with paper texture and rotating serif quotes.", "Leans into your tactile / warm neutral palette."],
-    ["Studio Ledger", "Table-based case studies with monospaced meta rows.", "Captures your grid-native tendency."],
-    ["Refraction Home", "Layered translucent panels over ivory canvas.", "Echoes your color harmony system."],
-    ["Slow Scroll", "Section-locked scroll with motion under 30%.", "Respects your low motion fingerprint."],
-    ["Print Poster", "Poster-style hero with oversized italic word marks.", "Doubles down on Editorial Modernist archetype."],
-    ["Warm Grid", "Tile-based directory with clay hover states.", "Uses split-complementary harmony you scored high on."],
-    ["Ink Mode", "Dark ink variant with bone typography inversions.", "Extends the palette without breaking archetype."],
+    [
+      "Editorial Journal",
+      "Long-form magazine layout with anchored serif drop caps.",
+      "Mirrors your print DNA and high-contrast serif signal.",
+    ],
+    [
+      "Curator Grid",
+      "Asymmetric card grid with generous margins and italic headings.",
+      "Uses your asymmetric composition score of 78%.",
+    ],
+    [
+      "Quiet Portfolio",
+      "Single-column scroll with drifting terracotta accents.",
+      "Amplifies negative space, matches Calm energy profile.",
+    ],
+    [
+      "Atelier Landing",
+      "Split hero with paper texture and rotating serif quotes.",
+      "Leans into your tactile / warm neutral palette.",
+    ],
+    [
+      "Studio Ledger",
+      "Table-based case studies with monospaced meta rows.",
+      "Captures your grid-native tendency.",
+    ],
+    [
+      "Refraction Home",
+      "Layered translucent panels over ivory canvas.",
+      "Echoes your color harmony system.",
+    ],
+    [
+      "Slow Scroll",
+      "Section-locked scroll with motion under 30%.",
+      "Respects your low motion fingerprint.",
+    ],
+    [
+      "Print Poster",
+      "Poster-style hero with oversized italic word marks.",
+      "Doubles down on Editorial Modernist archetype.",
+    ],
+    [
+      "Warm Grid",
+      "Tile-based directory with clay hover states.",
+      "Uses split-complementary harmony you scored high on.",
+    ],
+    [
+      "Ink Mode",
+      "Dark ink variant with bone typography inversions.",
+      "Extends the palette without breaking archetype.",
+    ],
   ]),
   brand: buildIdeas("Branding", [
-    ["Paper & Ink", "Stationery system built around uncoated stock and letterpress marks.", "Reinforces tactile, print-first personality."],
-    ["Terracotta Seal", "Wax-seal styled logomark with warm ochre foil.", "Extends terracotta accent into physical touchpoints."],
-    ["Editorial Masthead", "Masthead-driven identity with rotating italic subheads.", "Leans into your serif-heavy tag."],
-    ["Field Notes", "Compact pocket collateral with grid ruled interiors.", "Matches grid-native + tactile scores."],
-    ["Studio Journal", "Quarterly zine as the primary brand artifact.", "Aligns with your curator personality."],
-    ["Museum Label", "Museum-tag inspired product labels & captions.", "Uses your restrained typographic voice."],
-    ["Slow Motion", "Micro-motion identity with 400ms serif transitions.", "Respects your low motion fingerprint."],
-    ["Warm Neutral System", "Full six-token palette across bone, oat, clay, ink.", "Direct expression of your color DNA."],
-    ["Signature Italic", "Italic word-mark as the primary logo.", "Reflects your italic-forward display font."],
-    ["Craft Certification", "'Made with' craft stamp for every deliverable.", "Communicates thoughtful curator personality."],
+    [
+      "Paper & Ink",
+      "Stationery system built around uncoated stock and letterpress marks.",
+      "Reinforces tactile, print-first personality.",
+    ],
+    [
+      "Terracotta Seal",
+      "Wax-seal styled logomark with warm ochre foil.",
+      "Extends terracotta accent into physical touchpoints.",
+    ],
+    [
+      "Editorial Masthead",
+      "Masthead-driven identity with rotating italic subheads.",
+      "Leans into your serif-heavy tag.",
+    ],
+    [
+      "Field Notes",
+      "Compact pocket collateral with grid ruled interiors.",
+      "Matches grid-native + tactile scores.",
+    ],
+    [
+      "Studio Journal",
+      "Quarterly zine as the primary brand artifact.",
+      "Aligns with your curator personality.",
+    ],
+    [
+      "Museum Label",
+      "Museum-tag inspired product labels & captions.",
+      "Uses your restrained typographic voice.",
+    ],
+    [
+      "Slow Motion",
+      "Micro-motion identity with 400ms serif transitions.",
+      "Respects your low motion fingerprint.",
+    ],
+    [
+      "Warm Neutral System",
+      "Full six-token palette across bone, oat, clay, ink.",
+      "Direct expression of your color DNA.",
+    ],
+    [
+      "Signature Italic",
+      "Italic word-mark as the primary logo.",
+      "Reflects your italic-forward display font.",
+    ],
+    [
+      "Craft Certification",
+      "'Made with' craft stamp for every deliverable.",
+      "Communicates thoughtful curator personality.",
+    ],
   ]),
   logo: buildIdeas("Logo", [
-    ["Italic Word-mark", "Cormorant italic set in ink on bone ground.", "Direct match to your display font style."],
-    ["Monogram Seal", "Two-letter monogram inside a hairline circle.", "Uses restrained ornament (score 34%)."],
+    [
+      "Italic Word-mark",
+      "Cormorant italic set in ink on bone ground.",
+      "Direct match to your display font style.",
+    ],
+    [
+      "Monogram Seal",
+      "Two-letter monogram inside a hairline circle.",
+      "Uses restrained ornament (score 34%).",
+    ],
     ["Editorial Bar", "Word-mark under a full-width rule.", "Captures editorial masthead cue."],
-    ["Terracotta Dot", "Ink word-mark with a single terracotta punctuation dot.", "Highlights accent color with minimal ornament."],
-    ["Stacked Serif", "Two-line stacked serif with mixed weight.", "Uses high-contrast serif preference."],
-    ["Debossed Mark", "Emboss-ready mark with tight kerning.", "Extends tactile DNA into physical media."],
+    [
+      "Terracotta Dot",
+      "Ink word-mark with a single terracotta punctuation dot.",
+      "Highlights accent color with minimal ornament.",
+    ],
+    [
+      "Stacked Serif",
+      "Two-line stacked serif with mixed weight.",
+      "Uses high-contrast serif preference.",
+    ],
+    [
+      "Debossed Mark",
+      "Emboss-ready mark with tight kerning.",
+      "Extends tactile DNA into physical media.",
+    ],
     ["Grid Glyph", "Geometric glyph built on a 5×5 grid.", "Reflects grid-native tendency."],
-    ["Manuscript Ligature", "Custom ligature between two initials.", "Craft-forward, matches curator personality."],
-    ["Field Stamp", "Ink stamp with slight misregistration.", "Captures print-first, warm neutral feel."],
-    ["Solar Arc", "Word-mark under a thin terracotta arc.", "Introduces subtle warmth without noise."],
+    [
+      "Manuscript Ligature",
+      "Custom ligature between two initials.",
+      "Craft-forward, matches curator personality.",
+    ],
+    [
+      "Field Stamp",
+      "Ink stamp with slight misregistration.",
+      "Captures print-first, warm neutral feel.",
+    ],
+    [
+      "Solar Arc",
+      "Word-mark under a thin terracotta arc.",
+      "Introduces subtle warmth without noise.",
+    ],
   ]),
   social: buildIdeas("Social", [
-    ["Editorial Carousel", "5-slide carousel with italic pull-quotes.", "Uses your display type on high-engagement surface."],
-    ["Bone Grid", "9-tile Instagram grid alternating imagery and quotes.", "Grid-native + warm neutral in feed form."],
-    ["Terracotta Story Frames", "Story templates with terracotta chapter tags.", "Consistent accent use across stories."],
-    ["Slow Reels", "Reels with 24fps cuts and serif chapter cards.", "Respects your low motion score."],
-    ["Field Notes Post", "Handwritten annotation over photography.", "Amplifies tactile personality."],
-    ["Newsletter Teaser", "Post format teasing long-form journal entries.", "Points followers toward editorial hub."],
+    [
+      "Editorial Carousel",
+      "5-slide carousel with italic pull-quotes.",
+      "Uses your display type on high-engagement surface.",
+    ],
+    [
+      "Bone Grid",
+      "9-tile Instagram grid alternating imagery and quotes.",
+      "Grid-native + warm neutral in feed form.",
+    ],
+    [
+      "Terracotta Story Frames",
+      "Story templates with terracotta chapter tags.",
+      "Consistent accent use across stories.",
+    ],
+    [
+      "Slow Reels",
+      "Reels with 24fps cuts and serif chapter cards.",
+      "Respects your low motion score.",
+    ],
+    [
+      "Field Notes Post",
+      "Handwritten annotation over photography.",
+      "Amplifies tactile personality.",
+    ],
+    [
+      "Newsletter Teaser",
+      "Post format teasing long-form journal entries.",
+      "Points followers toward editorial hub.",
+    ],
     ["Palette Drop", "Weekly palette announcement post.", "Turns your color DNA into content."],
     ["Print Preview", "Mock magazine spread posts.", "Reinforces print-first identity."],
-    ["Quiet Announcement", "Text-only announcement in ink on bone.", "Restrained ornament, high contrast."],
+    [
+      "Quiet Announcement",
+      "Text-only announcement in ink on bone.",
+      "Restrained ornament, high contrast.",
+    ],
     ["Studio Diary", "Behind-the-scenes weekly diary post.", "Curator personality made public."],
   ]),
   portfolio: buildIdeas("Portfolio", [
-    ["Case Journal", "Each case study reads like a magazine feature.", "Direct match to Editorial Modernist archetype."],
+    [
+      "Case Journal",
+      "Each case study reads like a magazine feature.",
+      "Direct match to Editorial Modernist archetype.",
+    ],
     ["Index Grid", "Table-of-contents home with numbered rows.", "Uses grid-native score."],
-    ["Frame Focus", "Full-bleed hero image per project.", "High-contrast, low-density presentation."],
-    ["Field Notebook", "Sidebar of raw notes next to polished work.", "Curator personality on display."],
-    ["Chapter Scroll", "Chaptered long-scroll with italic dividers.", "Uses your serif-forward display."],
-    ["Studio Reel", "Motion reel gated by a quiet still frame.", "Respects your low motion fingerprint."],
+    [
+      "Frame Focus",
+      "Full-bleed hero image per project.",
+      "High-contrast, low-density presentation.",
+    ],
+    [
+      "Field Notebook",
+      "Sidebar of raw notes next to polished work.",
+      "Curator personality on display.",
+    ],
+    [
+      "Chapter Scroll",
+      "Chaptered long-scroll with italic dividers.",
+      "Uses your serif-forward display.",
+    ],
+    [
+      "Studio Reel",
+      "Motion reel gated by a quiet still frame.",
+      "Respects your low motion fingerprint.",
+    ],
     ["Ledger Layout", "Two-column ledger with metadata on the left.", "Editorial + grid-native."],
-    ["Print Mode Toggle", "Portfolio switches to print-ready PDF view.", "Extends print DNA into UX."],
-    ["Terracotta Focus", "Currently featured project marked in terracotta.", "Uses accent color as wayfinding."],
+    [
+      "Print Mode Toggle",
+      "Portfolio switches to print-ready PDF view.",
+      "Extends print DNA into UX.",
+    ],
+    [
+      "Terracotta Focus",
+      "Currently featured project marked in terracotta.",
+      "Uses accent color as wayfinding.",
+    ],
     ["Warm Archive", "Bone-tinted archive of past work.", "Uses your neutral palette."],
   ]),
   deck: buildIdeas("Deck", [
-    ["Editorial Deck", "Magazine spread layouts per slide.", "Direct match to editorial archetype."],
+    [
+      "Editorial Deck",
+      "Magazine spread layouts per slide.",
+      "Direct match to editorial archetype.",
+    ],
     ["Ink on Bone", "Two-tone slides with italic titles.", "Uses core palette."],
     ["Grid Deck", "12-column grid with generous margins.", "Grid-native + high contrast."],
     ["Quiet Data", "Charts in ink with terracotta highlights.", "Uses accent restraint."],
@@ -221,8 +389,7 @@ function buildIdeas(_prefix: string, arr: [string, string, string][]) {
 const PROMPTS = {
   Midjourney:
     "editorial modernist magazine spread, warm ivory bone palette with terracotta accent and sage undertone, italic serif headline in Cormorant Garamond, uncoated paper texture, asymmetric grid, negative space, natural daylight, --ar 3:4 --style raw --v 6",
-  Flux:
-    "an editorial modernist composition on warm bone paper, italic serif typography, terracotta and sage accents, asymmetric print layout, high contrast, tactile grain, museum lighting, 35mm film look",
+  Flux: "an editorial modernist composition on warm bone paper, italic serif typography, terracotta and sage accents, asymmetric print layout, high contrast, tactile grain, museum lighting, 35mm film look",
   "Stable Diffusion":
     "(editorial:1.2) magazine layout, warm neutral palette #fdfcf8 #f5f1e9 #cf5a3c #7a8b6f #1a1918, italic serif display, asymmetric grid, uncoated paper, print DNA, cinematic natural light, hires, tactile",
   ChatGPT:
@@ -242,7 +409,9 @@ function radarPoints(values: number[], radius: number) {
 }
 
 function StyleDnaStudio() {
+  const [dna, setDna] = useState<StyleDNA | null>(null);
   const [images, setImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<"idle" | "analyzing" | "done">("idle");
   const [stageIdx, setStageIdx] = useState(0);
   const [dragOver, setDragOver] = useState(false);
@@ -251,7 +420,13 @@ function StyleDnaStudio() {
   const dnaRef = useRef<HTMLDivElement | null>(null);
 
   const addFromFiles = useCallback((files: FileList | File[]) => {
+    // const arr = Array.from(files).filter((f) => f.type.startsWith("image/"));
     const arr = Array.from(files).filter((f) => f.type.startsWith("image/"));
+
+    setImageFiles((prev) => {
+      const room = 10 - prev.length;
+      return [...prev, ...arr.slice(0, room)];
+    });
     if (!arr.length) return;
     setImages((prev) => {
       const room = 10 - prev.length;
@@ -298,24 +473,66 @@ function StyleDnaStudio() {
     });
   }, []);
 
-  const analyze = useCallback(() => {
-    if (images.length !== 10) return;
-    setStatus("analyzing");
-    setStageIdx(0);
-    let s = 0;
-    const timer = setInterval(() => {
-      s += 1;
-      if (s >= STAGES.length) {
-        clearInterval(timer);
-        setStatus("done");
-      } else {
-        setStageIdx(s);
-      }
-    }, 650);
-  }, [images.length]);
+  // const analyze = useCallback(() => {
+  //   if (images.length !== 10) return;
+  //   setStatus("analyzing");
+  //   setStageIdx(0);
+  //   let s = 0;
+  //   const timer = setInterval(() => {
+  //     s += 1;
+  //     if (s >= STAGES.length) {
+  //       clearInterval(timer);
+  //       setStatus("done");
+  //     } else {
+  //       setStageIdx(s);
+  //     }
+  //   }, 650);
+  // }, [images.length]);
 
+  const analyze = useCallback(async () => {
+    if (images.length !== 10 || imageFiles.length !== 10) return;
+
+    try {
+      setStatus("analyzing");
+      setStageIdx(0);
+
+      setStageIdx(1);
+
+      const firstFile = imageFiles[0];
+      if (firstFile) {
+        const base64 = await fileToBase64(firstFile);
+        const result = await analyzeImage(base64, firstFile.type);
+        console.log("Gemini Result:", result);
+      }
+
+      const generatedDna = await generateStyleDNA(imageFiles);
+
+      setDna(generatedDna);
+
+      console.log(generatedDna);
+
+      setStageIdx(2);
+
+      // future:
+      // vision analysis
+
+      setStageIdx(3);
+
+      // future:
+      // fingerprint generation
+
+      setStageIdx(4);
+
+      setStatus("done");
+    } catch (error) {
+      console.error(error);
+      setStatus("idle");
+    }
+  }, [imageFiles, images.length]);
   const reset = useCallback(() => {
     setImages([]);
+    setImageFiles([]);
+    setDna(null);
     setStatus("idle");
     setStageIdx(0);
   }, []);
@@ -485,8 +702,7 @@ function StyleDnaStudio() {
             <ul className="mt-8 space-y-3">
               {STAGES.map((s, i) => {
                 const active = status === "analyzing" && i === stageIdx;
-                const complete =
-                  status === "done" || (status === "analyzing" && i < stageIdx);
+                const complete = status === "done" || (status === "analyzing" && i < stageIdx);
                 return (
                   <li
                     key={s}
@@ -534,31 +750,29 @@ function StyleDnaStudio() {
                 <div className="grid gap-10 md:grid-cols-[1fr_1.4fr]">
                   <div>
                     <EyebrowLabel>Your Style DNA</EyebrowLabel>
-                    <h2 className="mt-3 font-display text-5xl italic leading-none">
-                      {DNA.name}
-                    </h2>
+                    <h2 className="mt-3 font-display text-5xl italic leading-none">{dna?.name}</h2>
                     <div className="mt-4 flex items-center gap-3">
                       <div className="flex-1">
                         <div className="h-1.5 overflow-hidden rounded-full bg-ink/10">
                           <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: `${DNA.confidence}%` }}
+                            animate={{ width: `${dna?.confidence}%` }}
                             transition={{ duration: 1.2, ease: "easeOut" }}
                             className="h-full bg-accent"
                           />
                         </div>
                       </div>
                       <span className="font-mono text-xs text-muted-foreground">
-                        {DNA.confidence}% confidence
+                        {dna?.confidence}% confidence
                       </span>
                     </div>
                     <dl className="mt-6 space-y-3 text-sm">
-                      <MetaRow k="Primary Theme" v={DNA.theme} />
-                      <MetaRow k="Creative Personality" v={DNA.personality} />
-                      <MetaRow k="Energy Profile" v={DNA.energy} />
+                      <MetaRow k="Primary Theme" v={dna?.theme} />
+                      <MetaRow k="Creative Personality" v={dna?.personality} />
+                      <MetaRow k="Energy Profile" v={dna?.energy} />
                     </dl>
                     <div className="mt-6 flex flex-wrap gap-2">
-                      {DNA.tags.map((t) => (
+                      {dna?.tags?.map((t) => (
                         <span
                           key={t}
                           className="rounded-full border border-border bg-background px-3 py-1 text-xs"
@@ -569,7 +783,7 @@ function StyleDnaStudio() {
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-6">
-                    {DNA.palette.map((c, i) => (
+                    {dna?.palette?.map((c, i) => (
                       <motion.div
                         key={c.hex}
                         initial={{ opacity: 0, y: 12 }}
@@ -581,9 +795,7 @@ function StyleDnaStudio() {
                           style={{ backgroundColor: c.hex }}
                         />
                         <p className="mt-2 text-xs">{c.name}</p>
-                        <p className="font-mono text-[10px] text-muted-foreground">
-                          {c.hex}
-                        </p>
+                        <p className="font-mono text-[10px] text-muted-foreground">{c.hex}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -595,9 +807,9 @@ function StyleDnaStudio() {
             <section className="px-6 pb-16">
               <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
                 <Card eyebrow="Color DNA" title="Warm neutral, terracotta-led">
-                  <p className="text-sm text-muted-foreground">Harmony · {DNA.harmony}</p>
+                  <p className="text-sm text-muted-foreground">Harmony · {dna?.harmony}</p>
                   <div className="mt-5 grid grid-cols-6 gap-1.5">
-                    {DNA.palette.map((c) => (
+                    {dna?.palette?.map((c) => (
                       <div
                         key={c.hex}
                         className="h-14 rounded-lg border border-border"
@@ -609,7 +821,7 @@ function StyleDnaStudio() {
                     Gradient System
                   </p>
                   <div className="mt-2 grid grid-cols-3 gap-2">
-                    {DNA.gradients.map((g) => (
+                    {dna?.gradients?.map((g) => (
                       <div
                         key={g}
                         className="h-16 rounded-xl border border-border"
@@ -622,29 +834,29 @@ function StyleDnaStudio() {
                 <Card eyebrow="Typography DNA" title="Italic serif meets neutral sans">
                   <div className="rounded-2xl border border-border bg-background p-5">
                     <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                      Display · {DNA.typography.display.name}
+                      Display · {dna?.typography?.display?.name}
                     </p>
                     <p className="mt-2 font-display text-4xl italic leading-none">
                       Discover the blueprint.
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {DNA.typography.display.style}
+                      {dna?.typography?.display?.style}
                     </p>
                   </div>
                   <div className="mt-3 rounded-2xl border border-border bg-background p-5">
                     <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                      Body · {DNA.typography.body.name}
+                      Body · {dna?.typography?.body?.name}
                     </p>
                     <p className="mt-2 text-sm leading-relaxed">
-                      Set the rhythm of your platform in a neutral geometric sans — quiet
-                      enough to disappear, precise enough to hold an editorial grid.
+                      Set the rhythm of your platform in a neutral geometric sans — quiet enough to
+                      disappear, precise enough to hold an editorial grid.
                     </p>
                   </div>
                   <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                     Recommended Pairings
                   </p>
                   <ul className="mt-2 space-y-1 text-sm">
-                    {DNA.typography.pairings.map((p) => (
+                    {dna?.typography?.pairings?.map((p) => (
                       <li key={p} className="flex items-center gap-2">
                         <span className="size-1 rounded-full bg-accent" />
                         {p}
@@ -660,7 +872,7 @@ function StyleDnaStudio() {
               <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
                 <Card eyebrow="Mood Analysis" title="How your aesthetic reads">
                   <div className="mt-4 space-y-4">
-                    {DNA.mood.map((m, i) => (
+                    {dna?.mood?.map((m, i) => (
                       <div key={m.label}>
                         <div className="flex items-center justify-between text-xs">
                           <span>{m.label}</span>
@@ -680,7 +892,7 @@ function StyleDnaStudio() {
                 </Card>
 
                 <Card eyebrow="Design Fingerprint" title="Your six-axis signature">
-                  <RadarChart data={DNA.fingerprint} />
+                  <RadarChart data={dna?.fingerprint || []} />
                 </Card>
               </div>
             </section>
@@ -695,7 +907,7 @@ function StyleDnaStudio() {
             <section className="px-6 pb-16">
               <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.4fr_1fr]">
                 <MoodboardGenerator />
-                <DesignTwins />
+                <DesignTwins dna={dna} />
               </div>
             </section>
 
@@ -714,13 +926,13 @@ function StyleDnaStudio() {
 }
 
 // ---------- Small building blocks ----------
-function MetaRow({ k, v }: { k: string; v: string }) {
+function MetaRow({ k, v }: { k: string; v?: string | null }) {
   return (
     <div className="flex items-start justify-between gap-6 border-b border-border/60 pb-2">
       <dt className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
         {k}
       </dt>
-      <dd className="max-w-xs text-right">{v}</dd>
+      <dd className="max-w-xs text-right">{v ?? "—"}</dd>
     </div>
   );
 }
@@ -744,13 +956,17 @@ function Card({
 }
 
 function RadarChart({ data }: { data: { label: string; value: number }[] }) {
+  if (!data?.length) return null;
   const size = 280;
   const cx = size / 2;
   const cy = size / 2;
   const radius = 110;
   const rings = [0.25, 0.5, 0.75, 1];
 
-  const points = radarPoints(data.map((d) => d.value), radius);
+  const points = radarPoints(
+    data.map((d) => d.value),
+    radius,
+  );
   const path = points.map(([x, y]) => `${cx + x},${cy + y}`).join(" ");
 
   return (
@@ -824,9 +1040,7 @@ function AiDirections() {
         <div className="mb-8 flex items-end justify-between gap-6">
           <div>
             <EyebrowLabel>AI Directions</EyebrowLabel>
-            <h2 className="mt-2 font-display text-4xl italic md:text-5xl">
-              Ten ideas per surface
-            </h2>
+            <h2 className="mt-2 font-display text-4xl italic md:text-5xl">Ten ideas per surface</h2>
           </div>
           <p className="hidden max-w-sm text-sm text-muted-foreground md:block">
             Tap a surface to generate ten direction concepts derived from your Style DNA.
@@ -845,7 +1059,8 @@ function AiDirections() {
                 Generate 10 directions tuned to your DNA.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 text-sm text-accent">
-                Generate <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                Generate{" "}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
           ))}
@@ -961,9 +1176,7 @@ function PromptLibrary() {
           </div>
         </div>
         <div className="relative mt-6 rounded-2xl border border-border bg-background p-6">
-          <p className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
-            {PROMPTS[active]}
-          </p>
+          <p className="whitespace-pre-wrap font-mono text-sm leading-relaxed">{PROMPTS[active]}</p>
           <button
             onClick={copy}
             className="absolute right-4 top-4 rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:bg-bone"
@@ -1028,7 +1241,8 @@ function MoodboardGenerator() {
 }
 
 // ---------- Design Twins ----------
-function DesignTwins() {
+function DesignTwins({ dna }: { dna: StyleDNA | null }) {
+  if (!dna) return null;
   return (
     <div className="rounded-3xl border border-border bg-ink p-8 text-background">
       <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent-soft">
@@ -1036,7 +1250,7 @@ function DesignTwins() {
       </span>
       <h3 className="mt-2 font-display text-3xl italic">Your closest design systems</h3>
       <ul className="mt-6 space-y-3">
-        {DNA.twins.map((t, i) => (
+        {dna?.twins?.map((t, i) => (
           <motion.li
             key={t.name}
             initial={{ opacity: 0, x: 10 }}
@@ -1091,8 +1305,8 @@ function DnaMatchChecker() {
       <EyebrowLabel>DNA Match Checker</EyebrowLabel>
       <h3 className="mt-2 font-display text-3xl italic">Score a design against your DNA</h3>
       <p className="mt-2 text-sm text-muted-foreground">
-        Upload any design and we&rsquo;ll grade how closely it aligns with your Editorial
-        Modernist signature.
+        Upload any design and we&rsquo;ll grade how closely it aligns with your Editorial Modernist
+        signature.
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-[1fr_1.2fr]">
@@ -1217,9 +1431,7 @@ function StyleDnaChat() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
-              m.role === "user"
-                ? "ml-auto bg-ink text-background"
-                : "bg-bone text-foreground"
+              m.role === "user" ? "ml-auto bg-ink text-background" : "bg-bone text-foreground"
             }`}
           >
             {m.content}

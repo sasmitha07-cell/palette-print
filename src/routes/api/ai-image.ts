@@ -8,10 +8,13 @@ export const Route = createFileRoute("/api/ai-image")({
         if (!prompt || typeof prompt !== "string") {
           return new Response("Prompt required", { status: 400 });
         }
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        const key = process.env.PALETTE_PRINT_AI_API_KEY;
+        const gateway = process.env.PALETTE_PRINT_AI_IMAGE_GATEWAY_URL;
+        if (!key) return new Response("Missing PALETTE_PRINT_AI_API_KEY", { status: 500 });
+        if (!gateway)
+          return new Response("Missing PALETTE_PRINT_AI_IMAGE_GATEWAY_URL", { status: 500 });
 
-        const upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+        const upstream = await fetch(gateway, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${key}`,
