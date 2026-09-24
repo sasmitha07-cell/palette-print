@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+import { paletteAuth } from "@/integrations/supabase/dev-auth";
+
 const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/how-it-works", label: "How It Works" },
@@ -24,11 +26,44 @@ export function SiteNav() {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const checkState = async () => {
+      const local = paletteAuth.getSession();
+      if (local?.user) {
+        setSignedIn(true);
+        return;
+      }
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSignedIn(!!data.session);
+      } catch {
+        setSignedIn(false);
+      }
+    };
+
+    checkState();
+
+    const unsubPalette = paletteAuth.onAuthStateChange((session) => {
       setSignedIn(!!session);
     });
-    return () => sub.subscription.unsubscribe();
+
+    let unsubSupabase = () => {};
+    try {
+      const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session) {
+          setSignedIn(true);
+        } else if (!paletteAuth.getSession()) {
+          setSignedIn(false);
+        }
+      });
+      unsubSupabase = () => sub.subscription.unsubscribe();
+    } catch {
+      // ignore
+    }
+
+    return () => {
+      unsubPalette();
+      unsubSupabase();
+    };
   }, []);
 
   return (
@@ -91,10 +126,7 @@ export function SiteNav() {
 
 function PrismMark() {
   return (
-    <span
-      aria-hidden
-      className="relative grid size-8 place-items-center rounded-full bg-accent/10"
-    >
+    <span aria-hidden className="relative grid size-8 place-items-center rounded-full bg-accent/10">
       <span className="size-3 rounded-full bg-accent shadow-glow" />
       <span className="absolute inset-0 rounded-full border border-accent/30" />
     </span>

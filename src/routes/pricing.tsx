@@ -100,8 +100,8 @@ function PricingPage() {
           Priced for <em className="text-accent">creative practice</em>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-          Start free. Scale with your studio. Every plan includes your full Style
-          DNA report and marketplace access.
+          Start free. Scale with your studio. Every plan includes your full Style DNA report and
+          marketplace access.
         </p>
       </section>
 
@@ -130,9 +130,7 @@ function PricingPage() {
               </p>
               <div className="mt-4 flex items-baseline gap-2">
                 <span className="font-display text-5xl italic">{t.price}</span>
-                <span
-                  className={t.solid ? "text-background/60" : "text-muted-foreground"}
-                >
+                <span className={t.solid ? "text-background/60" : "text-muted-foreground"}>
                   {t.cadence}
                 </span>
               </div>
@@ -169,7 +167,11 @@ function PricingPage() {
         <div className="mx-auto max-w-4xl">
           <SectionHeading
             eyebrow="FAQ"
-            title={<>Common <em>questions</em></>}
+            title={
+              <>
+                Common <em>questions</em>
+              </>
+            }
           />
           <div className="mt-10 divide-y divide-border rounded-3xl border border-border bg-background">
             {FAQ.map((f) => (

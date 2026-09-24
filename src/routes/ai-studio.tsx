@@ -13,10 +13,16 @@ import {
   Check,
   Plus,
   Trash2,
+  Upload,
+  Image as ImageIcon,
+  Layers,
+  SlidersHorizontal,
+  RefreshCw,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { EyebrowLabel, SectionHeading } from "@/components/site/section-heading";
+import { listDnaProfiles } from "@/lib/dna.functions";
 import {
   chatWithDna,
   createProject,
@@ -87,6 +93,249 @@ const DEFAULT_DNA = {
     { label: "Ornament", value: 34 },
   ],
 };
+
+const MAXIMALIST_DNA = {
+  name: "Experimental Maximalist",
+  style_name: "Experimental Maximalist",
+  summary:
+    "Vibrant high-contrast kinetic maximalism with saturated color collisions, bold typography, and dense spatial rhythm.",
+  tags: [
+    "High Energy",
+    "Color Saturated",
+    "Kinetic",
+    "Experimental Type",
+    "Dense Composition",
+    "Multi-layered",
+  ],
+  palette: [
+    { name: "Electric Cyan", hex: "#00F0FF" },
+    { name: "Acid Lime", hex: "#D4FF00" },
+    { name: "Hot Magenta", hex: "#FF007A" },
+    { name: "Deep Cobalt", hex: "#001AFF" },
+    { name: "Pure Chrome", hex: "#FFFFFF" },
+    { name: "Abyssal Black", hex: "#05050A" },
+  ],
+  typography: { display: "Clash Display", body: "Space Grotesk" },
+  mood: [
+    { label: "Minimalist", value: 12 },
+    { label: "Luxury", value: 45 },
+    { label: "Futuristic", value: 94 },
+    { label: "Creative", value: 98 },
+    { label: "Professional", value: 38 },
+    { label: "Experimental", value: 96 },
+  ],
+  fingerprint: [
+    { label: "Complexity", value: 92 },
+    { label: "Motion", value: 88 },
+    { label: "Density", value: 90 },
+    { label: "Contrast", value: 95 },
+    { label: "Warmth", value: 50 },
+    { label: "Ornament", value: 85 },
+  ],
+};
+
+export type StudioDna = typeof DEFAULT_DNA & {
+  identity?: { name: string; tagline: string; description: string; keywords: string[] };
+  principles?: string[];
+  doList?: string[];
+  dontList?: string[];
+  density?: number;
+  contrast?: any;
+  texture?: any;
+  imagery?: any;
+  confidence?: any;
+  [key: string]: any;
+};
+
+function ChangeDnaModal({
+  isOpen,
+  onClose,
+  activeDna,
+  onSelectDna,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  activeDna: StudioDna;
+  onSelectDna: (newDna: StudioDna) => void;
+}) {
+  const fetchProfiles = useServerFn(listDnaProfiles);
+  const [savedProfiles, setSavedProfiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setLoading(true);
+    fetchProfiles()
+      .then((data) => {
+        setSavedProfiles(data || []);
+      })
+      .catch(() => {
+        setSavedProfiles([]);
+      })
+      .finally(() => setLoading(false));
+  }, [isOpen, fetchProfiles]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-2xl rounded-3xl border border-border bg-background p-6 shadow-2xl">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
+          <div>
+            <h3 className="font-display text-2xl italic">Select Active Style DNA</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              Every AI Studio feature will anchor its generation directly to this selected DNA.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 text-muted-foreground hover:bg-bone hover:text-foreground"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        <div className="mt-6 max-h-[26rem] space-y-4 overflow-y-auto pr-1">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              Curated Aesthetic Archetypes
+            </p>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              <div
+                onClick={() => {
+                  onSelectDna(DEFAULT_DNA);
+                  onClose();
+                }}
+                className={`cursor-pointer rounded-2xl border p-4 transition-all ${
+                  activeDna.style_name === DEFAULT_DNA.style_name
+                    ? "border-accent bg-bone/70"
+                    : "border-border hover:border-accent"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-display text-lg italic">{DEFAULT_DNA.name}</p>
+                  {activeDna.style_name === DEFAULT_DNA.style_name && (
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-accent-foreground">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                  {DEFAULT_DNA.summary}
+                </p>
+                <div className="mt-3 flex gap-1">
+                  {DEFAULT_DNA.palette.map((p) => (
+                    <div
+                      key={p.hex}
+                      className="size-4 rounded"
+                      style={{ backgroundColor: p.hex }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  onSelectDna(MAXIMALIST_DNA as any);
+                  onClose();
+                }}
+                className={`cursor-pointer rounded-2xl border p-4 transition-all ${
+                  activeDna.style_name === MAXIMALIST_DNA.style_name
+                    ? "border-accent bg-bone/70"
+                    : "border-border hover:border-accent"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-display text-lg italic">{MAXIMALIST_DNA.name}</p>
+                  {activeDna.style_name === MAXIMALIST_DNA.style_name && (
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-accent-foreground">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                  {MAXIMALIST_DNA.summary}
+                </p>
+                <div className="mt-3 flex gap-1">
+                  {MAXIMALIST_DNA.palette.map((p) => (
+                    <div
+                      key={p.hex}
+                      className="size-4 rounded"
+                      style={{ backgroundColor: p.hex }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-border">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              Your Saved DNA Profiles
+            </p>
+            {loading ? (
+              <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
+                <Loader2 className="size-4 animate-spin text-accent" /> Loading your profiles...
+              </div>
+            ) : savedProfiles.length === 0 ? (
+              <p className="py-4 text-xs text-muted-foreground">
+                No custom saved DNA profiles yet. Analyze references on the Style DNA page to save a
+                profile.
+              </p>
+            ) : (
+              <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                {savedProfiles.map((p) => {
+                  const name = p.name || p.style_name || "Custom DNA";
+                  const hexList: string[] =
+                    p.palette?.rawHexList ||
+                    (Array.isArray(p.palette) ? p.palette.map((c: any) => c.hex) : []);
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => {
+                        onSelectDna({
+                          ...DEFAULT_DNA,
+                          ...p,
+                          name,
+                          style_name: name,
+                          palette: hexList.map((hex, i) => ({ name: `Color ${i + 1}`, hex })),
+                        });
+                        onClose();
+                      }}
+                      className={`cursor-pointer rounded-2xl border p-4 transition-all ${
+                        activeDna.id === p.id || activeDna.style_name === name
+                          ? "border-accent bg-bone/70"
+                          : "border-border hover:border-accent"
+                      }`}
+                    >
+                      <p className="font-display text-lg italic">{name}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {p.confidence
+                          ? `${Math.round(p.confidence * 100)}% confidence`
+                          : "Custom profile"}
+                      </p>
+                      {hexList.length > 0 && (
+                        <div className="mt-3 flex gap-1">
+                          {hexList.slice(0, 6).map((hex, i) => (
+                            <div
+                              key={i}
+                              className="size-4 rounded"
+                              style={{ backgroundColor: hex }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const SURFACES = [
   { key: "web", title: "Website Design", eyebrow: "Surface 01" },
@@ -160,12 +409,56 @@ function downloadDataUrl(filename: string, dataUrl: string) {
 
 // ============================================================
 function AiStudioPage() {
-  const dna = DEFAULT_DNA;
+  const [dna, setDna] = useState<StudioDna>(DEFAULT_DNA);
+  const [showDnaModal, setShowDnaModal] = useState(false);
   const { assets, save, remove } = useSavedAssets();
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("pp:active-dna");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed) {
+          setDna({
+            ...DEFAULT_DNA,
+            ...parsed,
+            name: parsed.identity?.name || parsed.name || DEFAULT_DNA.name,
+            style_name:
+              parsed.identity?.name || parsed.style_name || parsed.name || DEFAULT_DNA.style_name,
+            summary: parsed.identity?.description || parsed.summary || DEFAULT_DNA.summary,
+            tags: parsed.identity?.keywords || parsed.tags || DEFAULT_DNA.tags,
+            palette: parsed.palette?.rawHexList
+              ? parsed.palette.rawHexList.map((hex: string, i: number) => ({
+                  name: `Color ${i + 1}`,
+                  hex,
+                }))
+              : Array.isArray(parsed.palette)
+                ? parsed.palette
+                : DEFAULT_DNA.palette,
+            mood: Array.isArray(parsed.mood)
+              ? parsed.mood
+              : Object.entries(parsed.mood || {}).map(([label, val]) => ({
+                  label: label.charAt(0).toUpperCase() + label.slice(1),
+                  value: Math.round((Number(val) || 0.5) * 100),
+                })),
+            fingerprint: parsed.fingerprint || DEFAULT_DNA.fingerprint,
+          });
+        }
+      }
+    } catch {}
+  }, []);
+
+  const handleSelectDna = (newDna: StudioDna) => {
+    setDna(newDna);
+    try {
+      localStorage.setItem("pp:active-dna", JSON.stringify(newDna));
+    } catch {}
+    toast.success(`Active DNA switched to "${newDna.style_name}"`);
+  };
 
   return (
     <div className="overflow-hidden">
-      {/* Hero (unchanged aesthetic) */}
+      {/* Hero */}
       <section className="px-6 pb-16 pt-20">
         <div className="mx-auto max-w-6xl">
           <EyebrowLabel>AI Studio</EyebrowLabel>
@@ -182,6 +475,13 @@ function AiStudioPage() {
             <span className="rounded-full bg-ink px-3 py-1 font-medium text-background">
               {dna.style_name}
             </span>
+            <button
+              onClick={() => setShowDnaModal(true)}
+              className="inline-flex items-center gap-1 rounded-full border border-accent bg-accent/10 px-3 py-1 font-medium text-accent hover:bg-accent hover:text-accent-foreground transition-all"
+            >
+              <RefreshCw className="size-3" />
+              Change DNA
+            </button>
             {dna.tags.slice(0, 4).map((t) => (
               <span
                 key={t}
@@ -193,6 +493,13 @@ function AiStudioPage() {
           </div>
         </div>
       </section>
+
+      <ChangeDnaModal
+        isOpen={showDnaModal}
+        onClose={() => setShowDnaModal(false)}
+        activeDna={dna}
+        onSelectDna={handleSelectDna}
+      />
 
       <ApplyMyDna dna={dna} onSave={save} />
       <DnaChat dna={dna} />
@@ -217,10 +524,11 @@ function ApplyMyDna({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [active, setActive] = useState<SurfaceKey | null>(null);
+  const [userContext, setUserContext] = useState("");
   const [concepts, setConcepts] = useState<Concept[]>([]);
   const [loading, setLoading] = useState(false);
   const [detail, setDetail] = useState<Concept | null>(null);
@@ -231,7 +539,9 @@ function ApplyMyDna({
     setConcepts([]);
     setLoading(true);
     try {
-      const res: any = await gen({ data: { dna, surface, count: 10 } });
+      const res: any = await gen({
+        data: { dna, surface, count: 10, userContext: userContext.trim() || undefined },
+      });
       setConcepts(res?.concepts ?? []);
     } catch (e: any) {
       toast.error(e.message ?? "Generation failed");
@@ -250,9 +560,19 @@ function ApplyMyDna({
               Six surfaces, <em>ten concepts each</em>
             </>
           }
-          description="Pick a surface. We'll generate ten unique creative concepts anchored to your Style DNA."
+          description="Pick a surface. We'll generate ten unique creative concepts anchored to your Style DNA and your custom project request."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <input
+            value={userContext}
+            onChange={(e) => setUserContext(e.target.value)}
+            placeholder="Optional project request / theme (e.g. 'Luxury architecture website' or 'Playful music festival')..."
+            className="w-full max-w-xl rounded-full border border-border bg-background px-4 py-2.5 text-sm focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {SURFACES.map((s) => (
             <button
               key={s.key}
@@ -511,7 +831,7 @@ function ConceptDetail({
 // ============================================================
 // SECTION 2 — DNA Chat (real AI)
 // ============================================================
-function DnaChat({ dna }: { dna: typeof DEFAULT_DNA }) {
+function DnaChat({ dna }: { dna: StudioDna }) {
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([
     {
       role: "assistant",
@@ -552,6 +872,12 @@ function DnaChat({ dna }: { dna: typeof DEFAULT_DNA }) {
     "Create a logo concept",
     "Design my portfolio",
     "Suggest animations for my landing page",
+    "Make more minimal",
+    "Make more experimental",
+    "Make more premium",
+    "Make darker",
+    "Critique my current layout",
+    "Generate creative prompt",
   ];
 
   return (
@@ -628,14 +954,59 @@ function MoodboardGenerator({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const [images, setImages] = useState<Record<number, { url: string; final: boolean }>>({});
   const [busy, setBusy] = useState(false);
+  const [renderingAll, setRenderingAll] = useState(false);
   const [theme, setTheme] = useState("");
   const gen = useServerFn(generateMoodboardPrompts);
+
+  const renderTile = async (i: number, promptList = prompts) => {
+    if (images[i] || !promptList[i]) return;
+    try {
+      await streamImage(
+        promptList[i],
+        (url, final) => {
+          setImages((prev) => ({ ...prev, [i]: { url, final } }));
+        },
+        undefined,
+        dna,
+        i,
+      );
+    } catch (e: any) {
+      toast.error(e.message ?? "Image failed");
+    }
+  };
+
+  const renderAllTiles = async (promptList = prompts) => {
+    if (promptList.length === 0) return;
+    setRenderingAll(true);
+    // Batch in concurrent chunks of 3 for fast responsive streaming
+    for (let i = 0; i < promptList.length; i += 3) {
+      const batch = [i, i + 1, i + 2].filter((idx) => idx < promptList.length);
+      await Promise.all(
+        batch.map(async (idx) => {
+          try {
+            await streamImage(
+              promptList[idx],
+              (url, final) => {
+                setImages((prev) => ({ ...prev, [idx]: { url, final } }));
+              },
+              undefined,
+              dna,
+              idx,
+            );
+          } catch (err) {
+            console.warn(`Tile ${idx} render error:`, err);
+          }
+        }),
+      );
+    }
+    setRenderingAll(false);
+  };
 
   const build = async () => {
     setBusy(true);
@@ -644,6 +1015,10 @@ function MoodboardGenerator({
       const res: any = await gen({ data: { dna, theme } });
       const list = (res?.prompts as string[]) ?? [];
       setPrompts(list);
+      if (list.length > 0) {
+        toast.success("18 directions synthesized. Rendering living moodboard...");
+        renderAllTiles(list);
+      }
     } catch (e: any) {
       toast.error(e.message ?? "Failed");
     } finally {
@@ -651,16 +1026,7 @@ function MoodboardGenerator({
     }
   };
 
-  const renderTile = async (i: number) => {
-    if (images[i]) return;
-    try {
-      await streamImage(prompts[i], (url, final) => {
-        setImages((prev) => ({ ...prev, [i]: { url, final } }));
-      });
-    } catch (e: any) {
-      toast.error(e.message ?? "Image failed");
-    }
-  };
+  const renderedCount = Object.keys(images).length;
 
   return (
     <section className="border-t border-border px-6 py-24">
@@ -672,7 +1038,7 @@ function MoodboardGenerator({
               Generate a <em>living moodboard</em>
             </>
           }
-          description="Eighteen visual directions extracted from your DNA. Click any tile to render it."
+          description="Eighteen distinctive visual directions extracted from your DNA. Each tile features a bespoke museum-grade composition."
         />
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <input
@@ -692,6 +1058,22 @@ function MoodboardGenerator({
           {prompts.length > 0 && (
             <>
               <button
+                onClick={() => renderAllTiles()}
+                disabled={renderingAll}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2.5 text-xs font-medium hover:border-accent disabled:opacity-50"
+              >
+                {renderingAll ? (
+                  <Loader2 className="size-3.5 animate-spin text-accent" />
+                ) : (
+                  <RefreshCw className="size-3.5" />
+                )}
+                {renderingAll
+                  ? `Rendering (${renderedCount}/18)...`
+                  : renderedCount < 18
+                    ? `Render All (${renderedCount}/18)`
+                    : "Re-render All 18"}
+              </button>
+              <button
                 onClick={() => downloadJSON("moodboard.json", { prompts, images })}
                 className="rounded-full border border-border bg-background px-4 py-2.5 text-xs font-medium hover:border-accent"
               >
@@ -699,7 +1081,11 @@ function MoodboardGenerator({
               </button>
               <button
                 onClick={() =>
-                  onSave({ type: "moodboard", title: theme || "Moodboard", payload: { prompts } })
+                  onSave({
+                    type: "moodboard",
+                    title: theme || `${dna.style_name || "Style DNA"} Moodboard`,
+                    payload: { prompts, images, theme, count: prompts.length },
+                  })
                 }
                 className="rounded-full border border-border bg-background px-4 py-2.5 text-xs font-medium hover:border-accent"
               >
@@ -715,19 +1101,40 @@ function MoodboardGenerator({
               <button
                 key={i}
                 onClick={() => renderTile(i)}
-                className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-bone text-left"
+                className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-card text-left transition-all hover:border-accent hover:shadow-md"
               >
                 {images[i] ? (
-                  <img
-                    src={images[i].url}
-                    alt={p}
-                    className={`h-full w-full object-cover transition-[filter] ${
-                      images[i].final ? "blur-0" : "blur-lg"
-                    }`}
-                  />
+                  <div className="relative h-full w-full">
+                    <img
+                      src={images[i].url}
+                      alt={p}
+                      className={`h-full w-full object-cover transition-all duration-700 ${
+                        images[i].final ? "scale-100 blur-0" : "scale-105 blur-sm"
+                      }`}
+                    />
+                    <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/20 to-transparent p-2.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-accent font-semibold">
+                        Direction {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <p className="mt-0.5 line-clamp-2 font-serif text-[10px] italic text-white/95">
+                        {p}
+                      </p>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="absolute inset-0 flex items-end p-3 text-[10px] leading-tight text-muted-foreground opacity-80 transition-opacity group-hover:opacity-100">
-                    {p}
+                  <div className="absolute inset-0 flex flex-col justify-between bg-bone/40 p-3 transition-colors group-hover:bg-bone/70">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-accent font-bold">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <Wand2 className="size-3 text-muted-foreground opacity-60 transition-colors group-hover:text-accent group-hover:opacity-100" />
+                    </div>
+                    <p className="line-clamp-3 font-serif text-[11px] italic leading-tight text-foreground/80">
+                      {p}
+                    </p>
+                    <span className="font-mono text-[8px] uppercase tracking-wider text-muted-foreground">
+                      Click to render
+                    </span>
                   </div>
                 )}
               </button>
@@ -746,7 +1153,7 @@ function StyleRemixLab({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [blend, setBlend] = useState({ editorial: 60, futuristic: 20, luxury: 20 });
@@ -859,7 +1266,7 @@ function BrandKitGenerator({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [name, setName] = useState("");
@@ -987,10 +1394,11 @@ function SocialGenerator({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [platform, setPlatform] = useState<(typeof PLATFORMS)[number]>("instagram");
+  const [campaign, setCampaign] = useState("");
   const [items, setItems] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
   const gen = useServerFn(generateSocialContent);
@@ -998,7 +1406,9 @@ function SocialGenerator({
   const run = async () => {
     setBusy(true);
     try {
-      const res: any = await gen({ data: { dna, platform } });
+      const res: any = await gen({
+        data: { dna, platform, campaign: campaign.trim() || undefined },
+      });
       setItems(res?.concepts ?? []);
     } catch (e: any) {
       toast.error(e.message ?? "Social generation failed");
@@ -1017,8 +1427,19 @@ function SocialGenerator({
               Content <em>in your voice</em>
             </>
           }
+          description="Generate 10 post directions tailored for your target platform and campaign theme."
         />
-        <div className="mt-8 flex flex-wrap items-center gap-2">
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <input
+            value={campaign}
+            onChange={(e) => setCampaign(e.target.value)}
+            placeholder="Optional campaign theme (e.g. 'Minimalist spring drop' or 'Thought leadership series')..."
+            className="w-full max-w-lg rounded-full border border-border bg-background px-4 py-2.5 text-sm focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           {PLATFORMS.map((p) => (
             <button
               key={p}
@@ -1042,7 +1463,7 @@ function SocialGenerator({
             ) : (
               <Sparkles className="size-3.5" />
             )}
-            Generate 10
+            {busy ? "Generating..." : "Generate 10"}
           </button>
         </div>
 
@@ -1083,20 +1504,38 @@ function SocialGenerator({
 // ============================================================
 // SECTION 9 — Design Critique
 // ============================================================
-function CritiqueTool({ dna }: { dna: typeof DEFAULT_DNA }) {
+function CritiqueTool({ dna }: { dna: StudioDna }) {
   const [desc, setDesc] = useState("");
+  const [image, setImage] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const [busy, setBusy] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const gen = useServerFn(critiqueDesign);
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image too large. Please select an image under 10MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const run = async () => {
-    if (desc.trim().length < 20) {
-      toast.error("Describe the design in a bit more detail.");
+    if (!desc.trim() && !image) {
+      toast.error("Upload a design image or describe your design to critique.");
       return;
     }
     setBusy(true);
     try {
-      const res: any = await gen({ data: { dna, description: desc } });
+      const res: any = await gen({
+        data: { dna, description: desc.trim(), image: image ?? undefined },
+      });
       setResult(res);
     } catch (e: any) {
       toast.error(e.message ?? "Critique failed");
@@ -1112,35 +1551,71 @@ function CritiqueTool({ dna }: { dna: typeof DEFAULT_DNA }) {
           eyebrow="Design Critique"
           title={
             <>
-              DNA <em>Match Checker</em>
+              DNA <em>Match Checker & Vision Critique</em>
             </>
           }
-          description="Describe or paste details of a design. We'll score how well it matches your Style DNA."
+          description="Upload an actual design image or paste details. We'll score and critique how well it honors your Style DNA."
         />
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr,1.2fr]">
-          <div>
+          <div className="space-y-4">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+
+            {image ? (
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-bone">
+                <img src={image} alt="Uploaded design" className="h-full w-full object-cover" />
+                <button
+                  onClick={() => setImage(null)}
+                  className="absolute right-3 top-3 rounded-full bg-black/70 p-1.5 text-white hover:bg-black"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center transition-all hover:border-accent hover:bg-bone/40"
+              >
+                <Upload className="size-6 text-muted-foreground" />
+                <p className="mt-2 text-sm font-medium">Upload design image for Vision analysis</p>
+                <p className="mt-1 text-xs text-muted-foreground">PNG, JPG, WebP up to 10MB</p>
+              </div>
+            )}
+
             <textarea
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
-              rows={8}
-              placeholder="Describe the design: colors, typography, spacing, layout, mood, imagery…"
+              rows={4}
+              placeholder="Optional notes: colors, typography, spacing, layout, mood, intended audience…"
               className="w-full rounded-2xl border border-border bg-background p-4 text-sm focus:border-accent focus:outline-none"
             />
             <button
               onClick={run}
               disabled={busy}
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
             >
               {busy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-              Score against my DNA
+              {busy ? "Auditing with Gemini Vision..." : "Score against my DNA"}
             </button>
           </div>
           <div className="rounded-3xl border border-border bg-card p-8">
             {result ? (
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
-                  DNA Match
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                    DNA Match Score
+                  </p>
+                  {result.dnaAlignmentNotes && (
+                    <span className="rounded-full bg-bone px-3 py-0.5 text-xs text-muted-foreground">
+                      Audited
+                    </span>
+                  )}
+                </div>
                 <p className="mt-2 font-display text-6xl italic">{result.overall}%</p>
                 {result.scores && (
                   <div className="mt-6 space-y-3">
@@ -1160,13 +1635,40 @@ function CritiqueTool({ dna }: { dna: typeof DEFAULT_DNA }) {
                     ))}
                   </div>
                 )}
-                {result.suggestions && (
+
+                {result.strengths && result.strengths.length > 0 && (
                   <div className="mt-6">
                     <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      Suggestions
+                      Strengths & Alignments
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
-                      {(result.suggestions as string[]).map((s, i) => (
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-foreground/80">
+                      {(result.strengths as string[]).map((s: string, i: number) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.gaps && result.gaps.length > 0 && (
+                  <div className="mt-4">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Gaps & Misalignments
+                    </p>
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-foreground/80">
+                      {(result.gaps as string[]).map((s: string, i: number) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.suggestions && (
+                  <div className="mt-4">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Actionable Improvements
+                    </p>
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-foreground/80">
+                      {(result.suggestions as string[]).map((s: string, i: number) => (
                         <li key={i}>{s}</li>
                       ))}
                     </ul>
@@ -1175,7 +1677,8 @@ function CritiqueTool({ dna }: { dna: typeof DEFAULT_DNA }) {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Your score appears here after we compare the design against your DNA.
+                Upload a design image or paste your design details to audit against your active
+                Style DNA.
               </p>
             )}
           </div>
@@ -1194,10 +1697,11 @@ function WebsiteGenerator({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [type, setType] = useState<(typeof SITE_TYPES)[number]>("saas");
+  const [description, setDescription] = useState("");
   const [site, setSite] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const gen = useServerFn(generateWebsiteSections);
@@ -1205,7 +1709,9 @@ function WebsiteGenerator({
   const run = async () => {
     setBusy(true);
     try {
-      const res = await gen({ data: { dna, website_type: type } });
+      const res = await gen({
+        data: { dna, website_type: type, description: description.trim() || undefined },
+      });
       setSite(res);
     } catch (e: any) {
       toast.error(e.message ?? "Website failed");
@@ -1224,9 +1730,19 @@ function WebsiteGenerator({
               Structure <em>a full site</em>
             </>
           }
-          description="Pick a type. We'll generate hero, features, testimonials, CTA and footer aligned with your DNA."
+          description="Pick a type and provide details. We'll generate hero, features, testimonials, CTA and footer aligned with your DNA."
         />
-        <div className="mt-8 flex flex-wrap items-center gap-2">
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe your project or brand (e.g. 'An architectural lighting studio')..."
+            className="w-full max-w-lg rounded-full border border-border bg-background px-4 py-2.5 text-sm focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           {SITE_TYPES.map((t) => (
             <button
               key={t}
@@ -1248,7 +1764,7 @@ function WebsiteGenerator({
             ) : (
               <Sparkles className="size-3.5" />
             )}
-            Generate site
+            {busy ? "Generating site..." : "Generate site"}
           </button>
         </div>
 
@@ -1361,10 +1877,11 @@ function BriefCenter({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [active, setActive] = useState<string | null>(null);
+  const [context, setContext] = useState("");
   const [brief, setBrief] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const gen = useServerFn(generateBrief);
@@ -1374,7 +1891,9 @@ function BriefCenter({
     setBusy(true);
     setBrief(null);
     try {
-      const res = await gen({ data: { dna, kind } });
+      const res = await gen({
+        data: { dna, kind, context: context.trim() || undefined },
+      });
       setBrief(res);
     } catch (e: any) {
       toast.error(e.message ?? "Brief failed");
@@ -1393,8 +1912,19 @@ function BriefCenter({
               Generated briefs, <em>export-ready</em>
             </>
           }
+          description="Synthesize comprehensive strategic and design briefs anchored directly to your Style DNA."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <input
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            placeholder="Optional project context or requirements (e.g. 'Fintech series A launch' or 'Flagship store identity')..."
+            className="w-full max-w-lg rounded-full border border-border bg-background px-4 py-2.5 text-sm focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {BRIEFS.map((b, i) => (
             <button
               key={b}
@@ -1476,10 +2006,11 @@ function PromptLibrary({
   dna,
   onSave,
 }: {
-  dna: typeof DEFAULT_DNA;
+  dna: StudioDna;
   onSave: (a: Omit<SavedAsset, "id" | "createdAt">) => void;
 }) {
   const [target, setTarget] = useState<(typeof PROMPT_TARGETS)[number]>("Midjourney");
+  const [userGoal, setUserGoal] = useState("");
   const [prompts, setPrompts] = useState<{ tag: string; text: string }[]>([]);
   const [busy, setBusy] = useState(false);
   const gen = useServerFn(generatePrompts);
@@ -1487,7 +2018,9 @@ function PromptLibrary({
   const run = async () => {
     setBusy(true);
     try {
-      const res: any = await gen({ data: { dna, target } });
+      const res: any = await gen({
+        data: { dna, target, userGoal: userGoal.trim() || undefined },
+      });
       setPrompts(res?.prompts ?? []);
     } catch (e: any) {
       toast.error(e.message ?? "Prompts failed");
@@ -1511,8 +2044,19 @@ function PromptLibrary({
               Prompts tuned to <em>your voice</em>
             </>
           }
+          description="Synthesize tool-specific prompts that rigorously encode your palette, typography, and composition."
         />
-        <div className="mt-8 flex flex-wrap items-center gap-2">
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <input
+            value={userGoal}
+            onChange={(e) => setUserGoal(e.target.value)}
+            placeholder="Optional specific creative goal (e.g. 'Tactile editorial perfume bottle' or 'Landing page hero component')..."
+            className="w-full max-w-lg rounded-full border border-border bg-background px-4 py-2.5 text-sm focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           {PROMPT_TARGETS.map((t) => (
             <button
               key={t}
@@ -1536,7 +2080,7 @@ function PromptLibrary({
             ) : (
               <Sparkles className="size-3.5" />
             )}
-            Generate
+            {busy ? "Generating prompts..." : "Generate"}
           </button>
         </div>
 
@@ -1697,11 +2241,13 @@ function ProjectWorkspace() {
 }
 
 // ============================================================
-// SECTION 14 — My Assets (saved locally)
+// ============================================================
+// SECTION 14 — My Assets (saved locally with rich viewer)
 // ============================================================
 function MyAssets({ assets, onRemove }: { assets: SavedAsset[]; onRemove: (id: string) => void }) {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [selectedAsset, setSelectedAsset] = useState<SavedAsset | null>(null);
 
   const filtered = useMemo(() => {
     return assets
@@ -1721,7 +2267,7 @@ function MyAssets({ assets, onRemove }: { assets: SavedAsset[]; onRemove: (id: s
               Saved <em>work</em>
             </>
           }
-          description="Everything you save across AI Studio is stored here in your browser."
+          description="Everything you save across AI Studio is stored here in full detail. Click any card to inspect, copy, or export the full content."
         />
         <div className="mt-8 flex flex-wrap items-center gap-2">
           {types.map((t) => (
@@ -1756,33 +2302,97 @@ function MyAssets({ assets, onRemove }: { assets: SavedAsset[]; onRemove: (id: s
             {assets.length === 0 ? "Nothing saved yet." : "No matches."}
           </p>
         ) : (
-          <div className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((a) => (
-              <div key={a.id} className="rounded-2xl border border-border bg-background p-5">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-accent">
-                    {a.type}
-                  </span>
-                  <button
-                    onClick={() => onRemove(a.id)}
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <X className="size-4" />
-                  </button>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((a) => {
+              const p = a.payload as any;
+              return (
+                <div
+                  key={a.id}
+                  onClick={() => setSelectedAsset(a)}
+                  className="group relative cursor-pointer rounded-2xl border border-border bg-background p-5 transition-all hover:border-accent hover:shadow-lg flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-accent font-semibold">
+                        {a.type}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemove(a.id);
+                        }}
+                        className="text-muted-foreground hover:text-destructive p-1"
+                        title="Delete saved asset"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                    <p className="mt-2.5 font-display text-lg italic text-foreground group-hover:text-accent transition-colors">
+                      {a.title}
+                    </p>
+
+                    {/* Rich preview depending on type */}
+                    {a.type === "image" && p?.dataUrl && (
+                      <div className="mt-3 aspect-video w-full overflow-hidden rounded-xl bg-bone">
+                        <img
+                          src={p.dataUrl}
+                          alt={a.title}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+
+                    {a.type === "concept" && (
+                      <p className="mt-2 line-clamp-2 text-xs text-muted-foreground leading-relaxed">
+                        {p?.description || p?.direction || "Creative direction concept"}
+                      </p>
+                    )}
+
+                    {a.type === "prompt" && (
+                      <div className="mt-2.5 rounded-lg bg-bone/60 p-2.5 font-mono text-[11px] text-foreground/80 line-clamp-2 border border-border/60">
+                        {p?.text || "Prompt text"}
+                      </div>
+                    )}
+
+                    {a.type === "brief" && (
+                      <p className="mt-2 line-clamp-2 text-xs text-muted-foreground leading-relaxed">
+                        {p?.summary || p?.hero?.subhead || "Comprehensive creative and technical brief"}
+                      </p>
+                    )}
+
+                    {a.type === "brandkit" && Array.isArray(p?.palette) && (
+                      <div className="mt-3 flex gap-1.5">
+                        {p.palette.slice(0, 5).map((col: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="size-5 rounded-md border border-black/10 shadow-xs"
+                            style={{ backgroundColor: col.hex }}
+                            title={col.name || col.hex}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {a.type === "moodboard" && (
+                      <p className="mt-2 text-xs text-muted-foreground font-mono">
+                        {Array.isArray(p?.prompts)
+                          ? `${p.prompts.length} visual directions`
+                          : "Curated moodboard"}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                    <p className="text-[10px] text-muted-foreground font-mono">
+                      {new Date(a.createdAt).toLocaleDateString()}
+                    </p>
+                    <span className="text-xs text-accent font-medium inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      View content →
+                    </span>
+                  </div>
                 </div>
-                <p className="mt-3 font-display text-lg italic">{a.title}</p>
-                {a.type === "image" && (a.payload as any)?.dataUrl && (
-                  <img
-                    src={(a.payload as any).dataUrl}
-                    alt={a.title}
-                    className="mt-3 aspect-square w-full rounded-lg object-cover"
-                  />
-                )}
-                <p className="mt-2 text-[10px] text-muted-foreground">
-                  {new Date(a.createdAt).toLocaleString()}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -1800,6 +2410,352 @@ function MyAssets({ assets, onRemove }: { assets: SavedAsset[]; onRemove: (id: s
           </p>
         </div>
       </div>
+
+      {/* Full Content Inspection Modal */}
+      <AssetDetailModal
+        asset={selectedAsset}
+        onClose={() => setSelectedAsset(null)}
+        onRemove={onRemove}
+      />
     </section>
+  );
+}
+
+function AssetDetailModal({
+  asset,
+  onClose,
+  onRemove,
+}: {
+  asset: SavedAsset | null;
+  onClose: () => void;
+  onRemove: (id: string) => void;
+}) {
+  if (!asset) return null;
+  const p = asset.payload as any;
+
+  const copyPayload = () => {
+    let text = "";
+    if (asset.type === "prompt") text = p.text || "";
+    else if (asset.type === "concept")
+      text = `${p.name || asset.title}\n\nDescription: ${p.description || ""}\n\nDirection: ${p.direction || ""}\n\nDNA Alignment: ${p.style_explanation || ""}\n\nPrompt: ${p.prompt || ""}`;
+    else if (asset.type === "brief")
+      text = p.summary
+        ? `${asset.title}\n\n${p.summary}\n\n${Array.isArray(p.sections) ? p.sections.map((s: any) => `${s.heading}:\n${s.content}`).join("\n\n") : ""}`
+        : JSON.stringify(p, null, 2);
+    else text = JSON.stringify(p, null, 2);
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 16, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.98 }}
+          onClick={(e) => e.stopPropagation()}
+          className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-border bg-background p-6 sm:p-8 shadow-2xl"
+        >
+          <div className="flex items-start justify-between gap-4 border-b border-border pb-5">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-accent font-semibold">
+                Saved {asset.type}
+              </span>
+              <h3 className="mt-1 font-display text-2xl sm:text-3xl italic">{asset.title}</h3>
+              <p className="mt-1 text-[11px] text-muted-foreground font-mono">
+                Saved on {new Date(asset.createdAt).toLocaleString()}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="rounded-full p-2 text-muted-foreground hover:bg-bone hover:text-foreground transition-colors"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+
+          <div className="mt-6 space-y-6">
+            {asset.type === "concept" && (
+              <div className="space-y-4">
+                {p.description && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Description
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{p.description}</p>
+                  </div>
+                )}
+                {p.direction && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Art Direction
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{p.direction}</p>
+                  </div>
+                )}
+                {p.style_explanation && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      DNA Alignment
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{p.style_explanation}</p>
+                  </div>
+                )}
+                {p.prompt && (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                        Image Generation Prompt
+                      </p>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(p.prompt);
+                          toast.success("Prompt copied");
+                        }}
+                        className="inline-flex items-center gap-1 text-xs text-accent hover:underline"
+                      >
+                        <Copy className="size-3" /> Copy Prompt
+                      </button>
+                    </div>
+                    <div className="rounded-xl bg-bone/70 p-4 font-mono text-xs text-foreground/90 border border-border">
+                      {p.prompt}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {asset.type === "prompt" && (
+              <div className="space-y-4">
+                <div>
+                  <span className="rounded-full bg-accent/15 px-3 py-1 font-mono text-[11px] font-medium text-accent">
+                    Target: {p.tag || "Universal"}
+                  </span>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Full Prompt
+                    </p>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(p.text);
+                        toast.success("Prompt copied to clipboard");
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground"
+                    >
+                      <Copy className="size-3" /> Copy Prompt
+                    </button>
+                  </div>
+                  <div className="rounded-2xl border border-border bg-card p-5 font-mono text-xs sm:text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                    {p.text}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {asset.type === "brief" && (
+              <div className="space-y-6">
+                {p.summary && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Summary
+                    </p>
+                    <p className="mt-1.5 text-sm italic text-foreground/90">{p.summary}</p>
+                  </div>
+                )}
+                {Array.isArray(p.sections) && p.sections.length > 0 ? (
+                  <div className="space-y-4">
+                    {p.sections.map((s: any, idx: number) => (
+                      <div key={idx} className="rounded-2xl border border-border bg-card p-5">
+                        <p className="font-display text-lg italic text-foreground">{s.heading}</p>
+                        <p className="mt-2 text-xs sm:text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+                          {s.content}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : p.hero ? (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-border bg-card p-5">
+                      <span className="font-mono text-[10px] uppercase text-accent font-semibold">Hero Section</span>
+                      <p className="mt-1 font-display text-xl italic">{p.hero.headline}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{p.hero.subhead}</p>
+                      {p.hero.cta && <p className="mt-2 font-mono text-[11px] text-accent">CTA: {p.hero.cta}</p>}
+                      {p.hero.visual && (
+                        <p className="mt-2 text-xs text-foreground/80 bg-bone/60 p-2.5 rounded-lg">
+                          <strong>Art Direction:</strong> {p.hero.visual}
+                        </p>
+                      )}
+                    </div>
+                    {Array.isArray(p.features) && (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {p.features.map((f: any, i: number) => (
+                          <div key={i} className="rounded-xl border border-border bg-card p-4">
+                            <p className="text-sm font-semibold">{f.title}</p>
+                            <p className="mt-1 text-xs text-muted-foreground">{f.body}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {p.cta && (
+                      <div className="rounded-xl border border-border bg-card p-4">
+                        <span className="font-mono text-[10px] uppercase text-accent font-semibold">Call to Action</span>
+                        <p className="mt-1 font-display text-lg italic">{p.cta.headline}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{p.cta.body}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            )}
+
+            {asset.type === "brandkit" && (
+              <div className="space-y-6">
+                {p.summary && (
+                  <p className="text-sm text-foreground/80 leading-relaxed italic">{p.summary}</p>
+                )}
+                {Array.isArray(p.palette) && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                      Harmonic Palette
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                      {p.palette.map((c: any, i: number) => (
+                        <div key={i} className="rounded-xl border border-border bg-card p-3 text-center">
+                          <div className="h-10 w-full rounded-lg shadow-inner" style={{ backgroundColor: c.hex }} />
+                          <p className="mt-2 text-xs font-semibold truncate">{c.name || `Tone ${i + 1}`}</p>
+                          <p className="font-mono text-[10px] text-muted-foreground">{c.hex}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {p.typography && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-border bg-card p-4">
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase">Display Font</span>
+                      <p className="mt-1 font-display text-lg italic">{p.typography.display || "Serif"}</p>
+                    </div>
+                    <div className="rounded-xl border border-border bg-card p-4">
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase">Body Font</span>
+                      <p className="mt-1 font-sans text-sm font-medium">{p.typography.body || "Sans-serif"}</p>
+                    </div>
+                  </div>
+                )}
+                {Array.isArray(p.surface_recommendations) && p.surface_recommendations.length > 0 && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+                      Surface Recommendations
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1.5 text-xs text-foreground/85">
+                      {p.surface_recommendations.map((r: string, idx: number) => (
+                        <li key={idx}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {asset.type === "moodboard" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    18 Visual Directions
+                  </p>
+                  <button
+                    onClick={() => {
+                      const all = Array.isArray(p.prompts) ? p.prompts.join("\n\n") : "";
+                      navigator.clipboard.writeText(all);
+                      toast.success("All 18 prompts copied");
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
+                  >
+                    <Copy className="size-3" /> Copy All 18
+                  </button>
+                </div>
+                {p.images && Object.keys(p.images).length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {Object.entries(p.images).map(([k, imgData]: [string, any]) => (
+                      <div key={k} className="aspect-square overflow-hidden rounded-lg border border-border">
+                        <img src={imgData.url} alt={`Tile ${k}`} className="h-full w-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                  {Array.isArray(p.prompts) &&
+                    p.prompts.map((pm: string, i: number) => (
+                      <div key={i} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 text-xs">
+                        <span className="font-mono text-accent font-semibold">{String(i + 1).padStart(2, "0")}</span>
+                        <p className="flex-1 text-foreground/90 italic font-serif">{pm}</p>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(pm);
+                            toast.success(`Prompt ${i + 1} copied`);
+                          }}
+                          className="text-muted-foreground hover:text-accent"
+                        >
+                          <Copy className="size-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {asset.type === "image" && p?.dataUrl && (
+              <div className="space-y-4">
+                <div className="overflow-hidden rounded-2xl border border-border bg-black/10 flex items-center justify-center p-2">
+                  <img src={p.dataUrl} alt={asset.title} className="max-h-[50vh] w-auto object-contain rounded-xl" />
+                </div>
+                {p.concept?.prompt && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase text-muted-foreground">Original Prompt</p>
+                    <p className="mt-1 text-xs text-foreground/80 bg-bone/70 p-3 rounded-xl border border-border font-mono">
+                      {p.concept.prompt}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
+            <div className="flex gap-2">
+              <button
+                onClick={copyPayload}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium hover:border-accent"
+              >
+                <Copy className="size-3.5" /> Copy Content
+              </button>
+              <button
+                onClick={() => downloadJSON(`${asset.title.replace(/\s+/g, "_")}.json`, asset)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium hover:border-accent"
+              >
+                <Download className="size-3.5" /> Export JSON
+              </button>
+            </div>
+            <button
+              onClick={() => {
+                onRemove(asset.id);
+                onClose();
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-destructive/40 px-4 py-2 text-xs font-medium text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="size-3.5" /> Delete
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

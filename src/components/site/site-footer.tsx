@@ -12,8 +12,8 @@ export function SiteFooter() {
             <span className="font-display text-2xl italic">Palette Print</span>
           </div>
           <p className="max-w-[280px] text-sm text-muted-foreground">
-            The creative intelligence platform for designers, founders, and studios.
-            Capturing the unseen frequency of aesthetic preference.
+            The creative intelligence platform for designers, founders, and studios. Capturing the
+            unseen frequency of aesthetic preference.
           </p>
           <div className="flex gap-2">
             {["Twitter", "Are.na", "Instagram", "Dribbble"].map((s) => (
@@ -73,9 +73,7 @@ function FooterCol({
 }) {
   return (
     <div className="space-y-5">
-      <h5 className="font-mono text-[10px] uppercase tracking-[0.25em] text-accent">
-        {heading}
-      </h5>
+      <h5 className="font-mono text-[10px] uppercase tracking-[0.25em] text-accent">{heading}</h5>
       <ul className="space-y-3">
         {links.map((l, i) => (
           <li key={`${l.label}-${i}`}>

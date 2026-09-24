@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { SiteNav } from "@/components/site/site-nav";
 import { SiteFooter } from "@/components/site/site-footer";
 import { supabase } from "@/integrations/supabase/client";
+import { paletteAuth } from "@/integrations/supabase/dev-auth";
 
 function NotFoundComponent() {
   return (
@@ -43,6 +44,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
 
+  const handleClearCacheAndReload = () => {
+    try {
+      localStorage.removeItem("pp:active-dna");
+      localStorage.removeItem("pp:active-palette");
+    } catch {
+      // ignore
+    }
+    window.location.reload();
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -52,6 +63,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-3 text-sm text-muted-foreground">
           The signal broke. You can try loading it again or head back.
         </p>
+        {error?.message && (
+          <p className="mt-2 rounded-lg bg-red-500/10 px-3 py-1.5 font-mono text-xs text-red-600 dark:text-red-400">
+            {error.message}
+          </p>
+        )}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -61,6 +77,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             className="inline-flex items-center justify-center rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-colors hover:bg-accent"
           >
             Try again
+          </button>
+          <button
+            onClick={handleClearCacheAndReload}
+            className="inline-flex items-center justify-center rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-bone"
+          >
+            Clear saved data & reload
           </button>
           <a
             href="/"
@@ -140,12 +162,31 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+    let unsubSupabase = () => {};
+    try {
+      const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+        if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+        router.invalidate();
+        if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      });
+      unsubSupabase = () => sub.subscription.unsubscribe();
+    } catch {
+      // Supabase offline
+    }
+
+    const unsubPalette = paletteAuth.onAuthStateChange((session) => {
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (session) {
+        queryClient.invalidateQueries();
+      } else {
+        queryClient.clear();
+      }
     });
-    return () => sub.subscription.unsubscribe();
+
+    return () => {
+      unsubSupabase();
+      unsubPalette();
+    };
   }, [router, queryClient]);
 
   return (

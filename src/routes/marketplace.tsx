@@ -84,8 +84,8 @@ function MarketplacePage() {
             Discover, follow, and clone <em className="text-accent">Style DNAs</em>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            A community feed of aesthetic identities from designers, studios, and
-            creative technologists across the world.
+            A community feed of aesthetic identities from designers, studios, and creative
+            technologists across the world.
           </p>
         </div>
       </section>
@@ -112,9 +112,7 @@ function MarketplacePage() {
               </div>
               <div className="mt-6 flex items-start justify-between">
                 <div>
-                  <h3 className="font-display text-2xl italic leading-tight">
-                    {d.name}
-                  </h3>
+                  <h3 className="font-display text-2xl italic leading-tight">{d.name}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">
                     by {d.author} · {d.location}
                   </p>

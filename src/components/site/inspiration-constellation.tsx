@@ -28,7 +28,10 @@ export function InspirationConstellation() {
         <div className="animate-orbit size-[520px] rounded-full border border-dashed border-foreground/10" />
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="animate-orbit size-[360px] rounded-full border border-dashed border-accent/20" style={{ animationDirection: "reverse", animationDuration: "60s" }} />
+        <div
+          className="animate-orbit size-[360px] rounded-full border border-dashed border-accent/20"
+          style={{ animationDirection: "reverse", animationDuration: "60s" }}
+        />
       </div>
 
       {/* Center DNA node */}

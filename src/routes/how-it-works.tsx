@@ -24,14 +24,38 @@ export const Route = createFileRoute("/how-it-works")({
 });
 
 const STAGES = [
-  { n: "01", t: "Image Understanding", d: "Vision transformer maps subjects, textures, and space." },
-  { n: "02", t: "Color Detection", d: "Extracts dominant, secondary, and accent palettes with harmony scoring." },
-  { n: "03", t: "Composition Analysis", d: "Reads grid rhythm, balance, symmetry, and negative space." },
-  { n: "04", t: "Typography Analysis", d: "Infers type character, weight, and pairing preferences." },
+  {
+    n: "01",
+    t: "Image Understanding",
+    d: "Vision transformer maps subjects, textures, and space.",
+  },
+  {
+    n: "02",
+    t: "Color Detection",
+    d: "Extracts dominant, secondary, and accent palettes with harmony scoring.",
+  },
+  {
+    n: "03",
+    t: "Composition Analysis",
+    d: "Reads grid rhythm, balance, symmetry, and negative space.",
+  },
+  {
+    n: "04",
+    t: "Typography Analysis",
+    d: "Infers type character, weight, and pairing preferences.",
+  },
   { n: "05", t: "Mood Analysis", d: "Weighs emotional tone across eight sensory axes." },
   { n: "06", t: "Pattern Recognition", d: "Detects motifs, shape language, and repetition." },
-  { n: "07", t: "Style Clustering", d: "Groups your references into a coherent aesthetic archetype." },
-  { n: "08", t: "DNA Generation", d: "Synthesizes everything into your unique Style DNA signature." },
+  {
+    n: "07",
+    t: "Style Clustering",
+    d: "Groups your references into a coherent aesthetic archetype.",
+  },
+  {
+    n: "08",
+    t: "DNA Generation",
+    d: "Synthesizes everything into your unique Style DNA signature.",
+  },
 ];
 
 function HowItWorksPage() {
@@ -43,8 +67,8 @@ function HowItWorksPage() {
           From <em className="text-accent">10 images</em> to a complete creative system
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-          Every extraction runs through an eight-stage analysis pipeline. Here's
-          what happens behind the scenes.
+          Every extraction runs through an eight-stage analysis pipeline. Here's what happens behind
+          the scenes.
         </p>
       </section>
 
@@ -66,9 +90,7 @@ function HowItWorksPage() {
                 <h3 className="font-display text-3xl italic">{s.t}</h3>
                 <p className="mt-2 text-muted-foreground">{s.d}</p>
               </div>
-              <div className="hidden font-display text-6xl italic text-border md:block">
-                {s.n}
-              </div>
+              <div className="hidden font-display text-6xl italic text-border md:block">{s.n}</div>
             </motion.div>
           ))}
         </div>
@@ -78,7 +100,11 @@ function HowItWorksPage() {
         <div className="mx-auto max-w-6xl">
           <SectionHeading
             eyebrow="Then Generate"
-            title={<>The DNA <em>becomes</em> tangible</>}
+            title={
+              <>
+                The DNA <em>becomes</em> tangible
+              </>
+            }
           />
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {[

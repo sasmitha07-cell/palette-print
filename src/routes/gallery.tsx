@@ -20,8 +20,7 @@ export const Route = createFileRoute("/gallery")({
       { property: "og:title", content: "Palette Print Gallery" },
       {
         property: "og:description",
-        content:
-          "A living exhibition of Style DNAs, moodboards, and generated design systems.",
+        content: "A living exhibition of Style DNAs, moodboards, and generated design systems.",
       },
     ],
   }),

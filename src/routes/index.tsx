@@ -65,9 +65,8 @@ function Hero() {
           transition={{ delay: 0.25, duration: 0.9 }}
           className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground text-pretty md:text-xl"
         >
-          Upload ten inspirations. We decode your Style DNA and generate websites,
-          brands, portfolios, moodboards, and complete design systems — instantly,
-          in your voice.
+          Upload ten inspirations. We decode your Style DNA and generate websites, brands,
+          portfolios, moodboards, and complete design systems — instantly, in your voice.
         </motion.p>
 
         <motion.div
@@ -108,10 +107,7 @@ function TrustStrip() {
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
           {brands.map((b) => (
-            <span
-              key={b}
-              className="font-display text-xl italic tracking-tight text-foreground/40"
-            >
+            <span key={b} className="font-display text-xl italic tracking-tight text-foreground/40">
               {b}
             </span>
           ))}
@@ -178,9 +174,7 @@ function HowItWorks() {
                 <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
                   Step {s.n}
                 </span>
-                <h3 className="mt-6 font-display text-2xl italic leading-tight">
-                  {s.t}
-                </h3>
+                <h3 className="mt-6 font-display text-2xl italic leading-tight">{s.t}</h3>
               </div>
               <p className="mt-8 text-sm text-muted-foreground">{s.d}</p>
               <div className="mt-8 h-px w-8 bg-accent/40 transition-all group-hover:w-full" />
@@ -204,9 +198,8 @@ function StyleDnaShowcase() {
             The Editorial Modernist
           </h2>
           <p className="mt-6 text-muted-foreground text-pretty">
-            Your aesthetic profile leans toward high-contrast asymmetry, serif
-            display heritage, and a warm organic spectrum — mid-century print meets
-            contemporary luxury.
+            Your aesthetic profile leans toward high-contrast asymmetry, serif display heritage, and
+            a warm organic spectrum — mid-century print meets contemporary luxury.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-2">
@@ -230,9 +223,7 @@ function StyleDnaShowcase() {
 
           <div className="mt-10 rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-end justify-between border-b border-border pb-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em]">
-                Confidence
-              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em]">Confidence</span>
               <span className="font-display text-3xl italic">94.2%</span>
             </div>
             <div className="mt-5 space-y-4">
@@ -255,7 +246,11 @@ function StyleDnaShowcase() {
                       whileInView={{ width: `${m.v}%` }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                      className={m.l === "Contrast" || m.l === "Warmth" ? "h-full bg-accent" : "h-full bg-foreground"}
+                      className={
+                        m.l === "Contrast" || m.l === "Warmth"
+                          ? "h-full bg-accent"
+                          : "h-full bg-foreground"
+                      }
                     />
                   </div>
                 </div>
@@ -321,15 +316,11 @@ function StyleDnaShowcase() {
               <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent-soft">
                 Typography DNA
               </span>
-              <p className="mt-6 font-display text-5xl italic leading-none">
-                Cormorant
-              </p>
+              <p className="mt-6 font-display text-5xl italic leading-none">Cormorant</p>
               <p className="mt-1 font-display text-2xl">Garamond · Display</p>
               <div className="my-6 h-px bg-background/15" />
               <p className="font-sans text-lg font-medium">Inter Tight Grotesk</p>
-              <p className="mt-1 font-sans text-sm text-background/60">
-                Body · Interface · Data
-              </p>
+              <p className="mt-1 font-sans text-sm text-background/60">Body · Interface · Data</p>
             </div>
 
             {/* Radar preview */}
@@ -360,9 +351,7 @@ function StyleDnaShowcase() {
                   <div key={m.l}>
                     <div className="flex justify-between text-xs">
                       <span className="text-foreground/70">{m.l}</span>
-                      <span className="font-mono text-[10px] text-foreground/50">
-                        {m.v}
-                      </span>
+                      <span className="font-mono text-[10px] text-foreground/50">{m.v}</span>
                     </div>
                     <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-border">
                       <motion.div
@@ -452,9 +441,8 @@ function SurfaceGenerator() {
             }
           />
           <p className="max-w-sm text-sm text-muted-foreground">
-            Click any surface and Palette Print generates ten concept variations
-            using your Style DNA — layouts, mockups, palettes, and rationale
-            included.
+            Click any surface and Palette Print generates ten concept variations using your Style
+            DNA — layouts, mockups, palettes, and rationale included.
           </p>
         </div>
 
@@ -484,9 +472,7 @@ function SurfaceGenerator() {
                   </span>
                   <ArrowUpRight className="size-4 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
                 </div>
-                <h3 className="mt-4 font-display text-3xl italic leading-none">
-                  {s.t}
-                </h3>
+                <h3 className="mt-4 font-display text-3xl italic leading-none">{s.t}</h3>
                 <p className="mt-3 text-sm text-muted-foreground">{s.d}</p>
               </div>
             </motion.article>
@@ -525,9 +511,7 @@ function SurfaceMock({ kind, accent }: { kind: string; accent: string }) {
             Ma
           </p>
           <div className="mx-auto mt-2 h-px w-10" style={{ background: accent }} />
-          <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.4em]">
-            Studio · 2026
-          </p>
+          <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.4em]">Studio · 2026</p>
         </div>
       </div>
     );
@@ -724,9 +708,7 @@ function MarketplaceStrip() {
         {[...dnas, ...dnas].map((d, i) => (
           <div key={i} className="flex items-center gap-16">
             <span className="font-display text-3xl italic">{d}</span>
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-accent">
-              ✦
-            </span>
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-accent">✦</span>
           </div>
         ))}
       </div>
@@ -741,11 +723,7 @@ function PricingPreview() {
       name: "Curious",
       price: "$0",
       cadence: "forever",
-      notes: [
-        "1 Style DNA extraction",
-        "3 AI surface generations",
-        "Community marketplace",
-      ],
+      notes: ["1 Style DNA extraction", "3 AI surface generations", "Community marketplace"],
       cta: "Start Free",
       solid: false,
     },
@@ -782,7 +760,11 @@ function PricingPreview() {
         <SectionHeading
           align="center"
           eyebrow="Pricing"
-          title={<>Priced for <em>creative practice</em></>}
+          title={
+            <>
+              Priced for <em>creative practice</em>
+            </>
+          }
           description="Start free. Scale with your studio. All plans include your full Style DNA report."
         />
         <div className="mt-16 grid gap-6 md:grid-cols-3">

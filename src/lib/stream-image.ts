@@ -5,11 +5,13 @@ export async function streamImage(
   prompt: string,
   onFrame: (dataUrl: string, isFinal: boolean) => void,
   signal?: AbortSignal,
+  dna?: any,
+  index?: number,
 ): Promise<void> {
   const res = await fetch("/api/ai-image", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, dna, index }),
     signal,
   });
   if (!res.ok || !res.body) {
@@ -35,9 +37,14 @@ export async function streamImage(
       )
         return;
       const isFinal = event.event === "image_generation.completed";
-      if (!payload?.b64_json) return;
+      const rawUrl = payload?.dataUrl || payload?.data_url;
+      const b64 = payload?.b64_json;
+      if (!rawUrl && !b64) return;
+      const dataUrl =
+        rawUrl ||
+        (b64.startsWith("data:") ? b64 : `data:${payload?.mime_type || "image/png"};base64,${b64}`);
       flushSync(() => {
-        onFrame(`data:image/png;base64,${payload.b64_json}`, isFinal);
+        onFrame(dataUrl, isFinal);
       });
       if (isFinal) sawCompleted = true;
     },

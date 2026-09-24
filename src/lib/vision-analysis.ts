@@ -3,8 +3,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const apiKey = (import.meta.env.VITE_GEMINI_API_KEY || "").trim();
 const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
+const modelName =
+  (typeof process !== "undefined" && process.env?.GEMINI_MODEL) ||
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_GEMINI_MODEL) ||
+  "gemini-3.6-flash";
+
 const model = genAI?.getGenerativeModel({
-  model: "gemini-2.0-flash",
+  model: modelName,
 });
 
 export interface VisionAnalysis {
