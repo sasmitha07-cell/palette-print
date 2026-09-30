@@ -2146,7 +2146,7 @@ function ProjectWorkspace() {
     if (!name.trim()) return;
     setBusy(true);
     try {
-      await create({ data: { name: name.trim(), kind: "ai-studio", data: {} } });
+      await create({ data: { name: name.trim(), kind: "ai-studio", metadata: {} } });
       setName("");
       await refresh();
       toast.success("Project created");

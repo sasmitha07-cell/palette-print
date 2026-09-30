@@ -14,7 +14,7 @@ import {
   generateMoodboardFn,
   regenerateMoodboardItemFn,
   checkDnaMatchFn,
-  dnaChatFn,
+
   askDesignTwinFn,
 } from "@/lib/dna.functions";
 import type { StyleDNA, ImageStyleAnalysis } from "@/lib/ai/schemas";
@@ -22,7 +22,7 @@ import type { CreativeDirection } from "@/lib/ai/directions";
 import type { StylePrompt, PromptLibraryResult } from "@/lib/ai/prompts-library";
 import type { MoodboardItem, MoodboardCollection } from "@/lib/ai/moodboard";
 import type { DNAMatchScoreBreakdown } from "@/lib/ai/dna-match";
-import type { ChatMessage, DesignTwinRecommendation } from "@/lib/ai/dna-chat";
+import type { DesignTwinRecommendation } from "@/lib/ai/dna-chat";
 import {
   ArrowRight,
   Bookmark,
@@ -1714,11 +1714,10 @@ function StyleDnaStudio() {
               </div>
             </section>
 
-            {/* DNA Match + Chat */}
+            {/* DNA Match Checker */}
             <section className="px-6 pb-24">
-              <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+              <div className="mx-auto max-w-6xl">
                 <DnaMatchChecker dna={dna} />
-                <StyleDnaChat dna={dna} />
               </div>
             </section>
           </motion.div>
@@ -2904,129 +2903,6 @@ function Bar({ label, value }: { label: string; value: number }) {
           className="h-full bg-ink"
         />
       </div>
-    </div>
-  );
-}
-
-// ---------- Style DNA Chat ----------
-function StyleDnaChat({ dna }: { dna: StyleDNA | null }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      content: dna
-        ? `Hi — I'm your Style DNA assistant. I know you as "${dna.identity?.name || dna.name}", defined by ${dna.typography?.primaryCategory || "editorial"} typography, ${dna.densityLabel || "balanced"} density, and a ${(dna.palette?.temperature ?? 0.6) > 0.5 ? "warm" : "neutral"} palette. Ask me for layouts, pairings, or copywriting tone.`
-        : "Hi — I'm your Style DNA assistant. Extract your Style DNA above to start our consultation.",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const [thinking, setThinking] = useState(false);
-  const listRef = useRef<HTMLDivElement | null>(null);
-
-  const executeChat = useServerFn(dnaChatFn);
-
-  useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, thinking]);
-
-  const send = async (msgText?: string) => {
-    const q = (msgText || input).trim();
-    if (!q || !dna) return;
-    setInput("");
-    const newMessages: ChatMessage[] = [...messages, { role: "user", content: q }];
-    setMessages(newMessages);
-    setThinking(true);
-
-    try {
-      const reply = await executeChat({
-        data: {
-          messages: newMessages,
-          dna,
-        },
-      });
-      setMessages((m) => [...m, { role: "assistant", content: reply }]);
-    } catch {
-      toast.error("Assistant consultation failed.");
-    } finally {
-      setThinking(false);
-    }
-  };
-
-  const quickPills = [
-    "Make it more minimal",
-    "Make it more experimental",
-    "Give me 3 layout options",
-    "Critique this design",
-    "Website hero direction",
-  ];
-
-  return (
-    <div className="flex h-[580px] flex-col overflow-hidden rounded-3xl border border-border bg-card">
-      <div className="flex items-center gap-3 border-b border-border p-5">
-        <div className="grid size-9 place-items-center rounded-full bg-accent/15 text-accent">
-          <MessageCircle className="size-4" />
-        </div>
-        <div>
-          <EyebrowLabel>Style DNA Chat</EyebrowLabel>
-          <p className="font-display text-xl italic leading-tight">Trained on your aesthetic</p>
-        </div>
-      </div>
-      <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto p-5">
-        {messages.map((m, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm ${
-              m.role === "user"
-                ? "ml-auto bg-ink text-background"
-                : "bg-bone text-foreground leading-relaxed"
-            }`}
-          >
-            {m.content}
-          </motion.div>
-        ))}
-        {thinking ? (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Loader2 className="size-3 animate-spin text-accent" /> Consulting your DNA…
-          </div>
-        ) : null}
-      </div>
-
-      {/* Quick Pills */}
-      <div className="flex gap-1.5 overflow-x-auto border-t border-border/40 px-4 py-2">
-        {quickPills.map((pill) => (
-          <button
-            key={pill}
-            onClick={() => send(pill)}
-            disabled={thinking}
-            className="whitespace-nowrap rounded-full bg-bone px-3 py-1 font-mono text-[10px] text-muted-foreground hover:text-foreground disabled:opacity-50"
-          >
-            {pill}
-          </button>
-        ))}
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          send();
-        }}
-        className="flex items-center gap-2 border-t border-border p-4"
-      >
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask for a layout, palette variant, or brand line…"
-          className="flex-1 rounded-full border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-accent"
-        />
-        <button
-          type="submit"
-          className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground shadow-glow disabled:opacity-50"
-          disabled={!input.trim() || thinking}
-        >
-          <Send className="size-4" />
-        </button>
-      </form>
     </div>
   );
 }

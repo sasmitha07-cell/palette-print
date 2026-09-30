@@ -1081,7 +1081,7 @@ export const createProject = createServerFn({ method: "POST" })
           name: z.string().min(1).max(120),
           kind: z.string().default("ai-studio"),
           dna_profile_id: z.string().uuid().optional(),
-          data: z.record(z.string(), z.any()).optional(),
+          metadata: z.record(z.string(), z.any()).optional(),
         })
         .parse(val),
     ),
@@ -1095,7 +1095,7 @@ export const createProject = createServerFn({ method: "POST" })
           kind: data.kind,
           dna_profile_id: data.dna_profile_id ?? null,
           user_id: context.userId,
-          data: data.data ?? {},
+          data: data.metadata ?? {},
         })
         .select("id, name, kind, created_at, updated_at, data")
         .single();
@@ -1108,7 +1108,7 @@ export const createProject = createServerFn({ method: "POST" })
         kind: data.kind,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        data: data.data ?? {},
+        data: data.metadata ?? {},
       };
     }
   });
