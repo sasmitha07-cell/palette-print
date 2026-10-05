@@ -34,6 +34,7 @@ df = pd.read_csv(CSV_PATH)
 print(f"[*] Total samples loaded: {len(df)}", flush=True)
 print(f"[*] Classes found: {df['source_html'].nunique()} categories", flush=True)
 
+
 # 2. Extract features directly without cleaning
 rgb_features = df['rgb'].apply(lambda x: [float(v) for v in str(x).split(',')]).tolist()
 X = np.array(rgb_features)
