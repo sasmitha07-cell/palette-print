@@ -25,7 +25,7 @@ except Exception:
     pass
 
 print("=" * 60, flush=True)
-print("[+] STARTING DATASET TRAINING RUN (NO CLEANING, DIRECT TRAINING)", flush=True)
+print("[+] STARTING DATASET TRAINING RUN", flush=True)
 print("=" * 60, flush=True)
 
 # 1. Load dataset as-is
