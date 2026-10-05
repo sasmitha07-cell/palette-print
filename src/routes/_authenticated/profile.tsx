@@ -141,9 +141,7 @@ function ProfilePage() {
                 className="flex flex-col justify-between rounded-2xl border border-border bg-background p-4 text-left transition-all hover:border-accent hover:shadow-sm"
               >
                 <div>
-                  <span className="font-mono text-[9px] uppercase text-accent">
-                    {dp.archetype}
-                  </span>
+                  <span className="font-mono text-[9px] uppercase text-accent">{dp.archetype}</span>
                   <p className="mt-1 font-display text-lg italic">{dp.name}</p>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">{dp.role}</p>
                 </div>

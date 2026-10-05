@@ -150,10 +150,7 @@ function generateLocalToken(userId: string, email: string, name: string, isDemo 
   return `${encodedHeader}.${encodedPayload}.${isDemo ? "palette_dev_signature" : "palette_local_signature"}`;
 }
 
-function createSessionObject(
-  user: PaletteUser,
-  token: string,
-): PaletteSession {
+function createSessionObject(user: PaletteUser, token: string): PaletteSession {
   const now = Math.floor(Date.now() / 1000);
   const exp = now + 365 * 24 * 3600;
 
@@ -366,11 +363,7 @@ export const paletteAuth = {
   /**
    * Create a new custom demo user persona.
    */
-  createCustomDemoUser(input: {
-    name: string;
-    role?: string;
-    email?: string;
-  }): PaletteSession {
+  createCustomDemoUser(input: { name: string; role?: string; email?: string }): PaletteSession {
     const name = input.name.trim() || "Creative Explorer";
     const role = input.role?.trim() || "Independent Designer";
     const email =

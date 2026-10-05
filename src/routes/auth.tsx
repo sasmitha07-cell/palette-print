@@ -1,7 +1,16 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { Sparkles, UserCheck, Shield, Wand2, ArrowRight, UserPlus, LogIn, Compass } from "lucide-react";
+import {
+  Sparkles,
+  UserCheck,
+  Shield,
+  Wand2,
+  ArrowRight,
+  UserPlus,
+  LogIn,
+  Compass,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { paletteAuth, DEMO_PRESETS, type DemoPersona } from "@/integrations/supabase/dev-auth";
 
@@ -11,7 +20,8 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in & Studio Access — Palette Print" },
       {
         name: "description",
-        content: "Sign in, register your account, or launch a Demo Studio persona to explore Style DNA.",
+        content:
+          "Sign in, register your account, or launch a Demo Studio persona to explore Style DNA.",
       },
     ],
   }),
@@ -43,11 +53,14 @@ function AuthPage() {
       navigate({ to: "/profile", replace: true });
       return;
     }
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/profile", replace: true });
-    }).catch(() => {
-      // offline
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) navigate({ to: "/profile", replace: true });
+      })
+      .catch(() => {
+        // offline
+      });
   }, [navigate]);
 
   const launchDemo = (persona?: DemoPersona) => {
@@ -61,7 +74,11 @@ function AuthPage() {
         });
         toast.success(`Signed in as ${persona.name} (${persona.role})`);
       } else {
-        paletteAuth.createDemoSession("Studio Designer", "designer@paletteprint.studio", "Lead Designer");
+        paletteAuth.createDemoSession(
+          "Studio Designer",
+          "designer@paletteprint.studio",
+          "Lead Designer",
+        );
         toast.success("Signed in with Studio Designer Demo Account");
       }
       router.invalidate();
@@ -310,7 +327,10 @@ function AuthPage() {
             </div>
 
             {showCustomDemoForm && (
-              <form onSubmit={handleCreateCustomDemo} className="mt-4 space-y-3 border-t border-border/50 pt-4">
+              <form
+                onSubmit={handleCreateCustomDemo}
+                className="mt-4 space-y-3 border-t border-border/50 pt-4"
+              >
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Field label="Full Name">
                     <input

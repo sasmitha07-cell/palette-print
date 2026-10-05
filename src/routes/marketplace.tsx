@@ -115,7 +115,10 @@ function UserDnaCard({ profile, index }: { profile: DnaProfile; index: number })
           Your DNA
         </span>
         <span className="font-mono text-[10px] text-muted-foreground">
-          {new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+          {new Date(profile.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          })}
         </span>
       </div>
 
@@ -278,8 +281,7 @@ function MarketplacePage() {
         <div className="mx-auto max-w-6xl">
           <EyebrowLabel>Marketplace</EyebrowLabel>
           <h1 className="mt-6 max-w-3xl font-display text-6xl italic leading-[1.05]">
-            Discover, follow, and clone{" "}
-            <em className="text-accent">Style DNAs</em>
+            Discover, follow, and clone <em className="text-accent">Style DNAs</em>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
             A community feed of aesthetic identities from designers, studios, and creative
@@ -371,7 +373,8 @@ function MarketplacePage() {
           <div className="mb-6 flex items-center justify-between">
             <h2 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
               Community DNAs
-              {search && ` · ${filteredCommunity.length} result${filteredCommunity.length !== 1 ? "s" : ""}`}
+              {search &&
+                ` · ${filteredCommunity.length} result${filteredCommunity.length !== 1 ? "s" : ""}`}
             </h2>
           </div>
 

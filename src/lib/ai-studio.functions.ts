@@ -81,7 +81,9 @@ async function callGeminiJson<T>(system: string, user: string, fallback: T): Pro
     }
   }
 
-  console.warn("[callGeminiJson] All candidate Gemini models exhausted. Serving deterministic studio synthesis.");
+  console.warn(
+    "[callGeminiJson] All candidate Gemini models exhausted. Serving deterministic studio synthesis.",
+  );
   return fallback;
 }
 
@@ -566,70 +568,80 @@ Return JSON:
         type: "Carousel",
         title: `${ctx.identity.name} Anatomy`,
         hook: "Why 99% of design systems look identical—and how visual DNA changes the equation.",
-        description: "A 5-slide visual breakdown illustrating color balance, typographic tension, and negative space principles.",
+        description:
+          "A 5-slide visual breakdown illustrating color balance, typographic tension, and negative space principles.",
         visual_direction: `Slide 1: High-contrast cover with ${primaryColor} base and ${accentColor} accent tag. Slides 2-5: Minimalist diagrams on ${neutralColor}.`,
       },
       {
         type: "Single Post",
         title: "The Manifesto",
         hook: "True luxury is the absence of unnecessary noise.",
-        description: "A bold typographic statement celebrating spatial discipline and authentic material texture.",
+        description:
+          "A bold typographic statement celebrating spatial discipline and authentic material texture.",
         visual_direction: `Single high-impact square image. Deep ${primaryColor} background with sculptural serif headline in off-white.`,
       },
       {
         type: "Story",
         title: "Behind the Color Palette",
         hook: "Dissecting the hues that define our signature look.",
-        description: "Vertical interactive story featuring color swatches, Pantone references, and tactile inspiration imagery.",
+        description:
+          "Vertical interactive story featuring color swatches, Pantone references, and tactile inspiration imagery.",
         visual_direction: `Vertical 9:16 format. Split screen featuring raw material photo top and color extraction swatch cards bottom.`,
       },
       {
         type: "Thread",
         title: "10 Rules of Spatial Harmony",
         hook: "How we approach whitespace as an active design material.",
-        description: "In-depth breakdown of margins, optical alignment, and rhythm that transforms good UI into museum-grade art.",
+        description:
+          "In-depth breakdown of margins, optical alignment, and rhythm that transforms good UI into museum-grade art.",
         visual_direction: `Thread header image featuring an architectural grid overlay with precise geometric millimeter measurements.`,
       },
       {
         type: "Showcase",
         title: "Specimen In The Wild",
         hook: "From abstract DNA tokens to physical touchpoints.",
-        description: "Product and print collateral mockups showcasing tactile finishes and letterpress debossing.",
+        description:
+          "Product and print collateral mockups showcasing tactile finishes and letterpress debossing.",
         visual_direction: `Studio product photography on travertine stone pedestal, natural sunlight, crisp shadows, ${ctx.palette.hexList.join(", ")}.`,
       },
       {
         type: "Carousel",
         title: "Typography Deep Dive",
         hook: "Why pairing high-contrast serifs with geometric sans creates instant authority.",
-        description: "Comparative specimen slides showcasing font hierarchy, kerning subtleties, and scale dynamics.",
+        description:
+          "Comparative specimen slides showcasing font hierarchy, kerning subtleties, and scale dynamics.",
         visual_direction: `Monochrome editorial slides with oversized character glyphs ('&', 'Q', 'R') in ${accentColor}.`,
       },
       {
         type: "Single Post",
         title: "The Design Critique",
         hook: "Good design is obvious. Great design is transparent.",
-        description: "Side-by-side design analysis showing before vs after applying strict DNA constraints.",
+        description:
+          "Side-by-side design analysis showing before vs after applying strict DNA constraints.",
         visual_direction: `Split card layout showing 'Generic commercial template' vs 'Curated DNA execution'.`,
       },
       {
         type: "Story",
         title: "Moodboard Snapshot",
         hook: "Current studio atmosphere and material references.",
-        description: "Curated collage of architecture, industrial design, and textile swatches inspiring the active collection.",
+        description:
+          "Curated collage of architecture, industrial design, and textile swatches inspiring the active collection.",
         visual_direction: `9:16 moodboard grid with 6 organic vignettes and subtle film grain overlay.`,
       },
       {
         type: "Single Post",
         title: "Interactive Prototype Reveal",
         hook: "When motion meets editorial typography.",
-        description: "Short video or animated post demonstrating fluid page transitions and magnetic micro-interactions.",
+        description:
+          "Short video or animated post demonstrating fluid page transitions and magnetic micro-interactions.",
         visual_direction: `Screen recording mockup inside an ultra-thin minimalist device bezel, floating on deep textured shadow.`,
       },
       {
         type: "Thread",
         title: "The Future of AI Design",
         hook: "Why prompt engineering without visual DNA is just guessing.",
-        description: "Thought-leadership perspective explaining how vector extraction ensures brand consistency across every AI output.",
+        description:
+          "Thought-leadership perspective explaining how vector extraction ensures brand consistency across every AI output.",
         visual_direction: `Clean graphic diagram showing the pipeline: Input Reference -> DNA Extraction -> Multi-Surface Synthesis.`,
       },
     ];
@@ -673,15 +685,15 @@ function computeAestheticRemix(ctx: StyleDNAContext, blend: Record<string, numbe
     },
     {
       name: "Structural Base",
-      hex: wFut > 0.35 ? "#1B2436" : wLux > 0.35 ? "#2A2420" : (ctx.palette.hexList[1] || "#3D4440"),
+      hex: wFut > 0.35 ? "#1B2436" : wLux > 0.35 ? "#2A2420" : ctx.palette.hexList[1] || "#3D4440",
     },
     {
       name: "Tonal Harmonic",
-      hex: wFut > 0.35 ? "#3B82F6" : wLux > 0.35 ? "#B89A67" : (ctx.palette.hexList[2] || "#A3978E"),
+      hex: wFut > 0.35 ? "#3B82F6" : wLux > 0.35 ? "#B89A67" : ctx.palette.hexList[2] || "#A3978E",
     },
     {
       name: "Vibrant Accent",
-      hex: wFut > 0.35 ? "#00F0FF" : wLux > 0.35 ? "#D4AF37" : (ctx.palette.accent?.hex || "#E11D48"),
+      hex: wFut > 0.35 ? "#00F0FF" : wLux > 0.35 ? "#D4AF37" : ctx.palette.accent?.hex || "#E11D48",
     },
     {
       name: "Ambient Neutral",
@@ -690,8 +702,18 @@ function computeAestheticRemix(ctx: StyleDNAContext, blend: Record<string, numbe
   ];
 
   const typography = {
-    display: wFut > 0.4 ? "Space Grotesk / Syne" : wLux > 0.4 ? "Cinzel / Playfair Display" : "Canela / Editorial New",
-    body: wFut > 0.4 ? "JetBrains Mono / Inter" : wLux > 0.4 ? "Cormorant Garamond" : "Söhne / Neue Haas",
+    display:
+      wFut > 0.4
+        ? "Space Grotesk / Syne"
+        : wLux > 0.4
+          ? "Cinzel / Playfair Display"
+          : "Canela / Editorial New",
+    body:
+      wFut > 0.4
+        ? "JetBrains Mono / Inter"
+        : wLux > 0.4
+          ? "Cormorant Garamond"
+          : "Söhne / Neue Haas",
   };
 
   const mood = [
@@ -914,11 +936,13 @@ Return JSON:
       ],
       testimonials: [
         {
-          quote: "Palette Print gave our visual identity an unmistakable signature that resonates with our audience.",
+          quote:
+            "Palette Print gave our visual identity an unmistakable signature that resonates with our audience.",
           author: "Elena Rostova, Creative Director",
         },
         {
-          quote: "The generative intelligence adheres strictly to our DNA, saving hundreds of design hours.",
+          quote:
+            "The generative intelligence adheres strictly to our DNA, saving hundreds of design hours.",
           author: "Marcus Chen, Design Principal",
         },
       ],
@@ -1007,7 +1031,12 @@ function buildFallbackPrompts(ctx: StyleDNAContext, target: string, userGoal?: s
   return [
     {
       tag: "Tailwind Theme & CSS Variables",
-      text: `Extend tailwind.config.ts with the bespoke theme tokens for ${ctx.identity.name}: colors: { brand: { primary: '${primary}', accent: '${accent}', neutral: '${ctx.palette.neutral?.hex || "#F5F3EF"}', palette: [${colors.split(", ").map(c => `'${c}'`).join(", ")}] } }, fontFamily: { display: ['${ctx.typography.displayFontExample || "Cormorant Garamond"}', 'serif'], body: ['${ctx.typography.bodyFontExample || "Inter"}', 'sans-serif'] }, spacing: { 'section-gap': '6rem' }`,
+      text: `Extend tailwind.config.ts with the bespoke theme tokens for ${ctx.identity.name}: colors: { brand: { primary: '${primary}', accent: '${accent}', neutral: '${ctx.palette.neutral?.hex || "#F5F3EF"}', palette: [${colors
+        .split(", ")
+        .map((c) => `'${c}'`)
+        .join(
+          ", ",
+        )}] } }, fontFamily: { display: ['${ctx.typography.displayFontExample || "Cormorant Garamond"}', 'serif'], body: ['${ctx.typography.bodyFontExample || "Inter"}', 'sans-serif'] }, spacing: { 'section-gap': '6rem' }`,
     },
     {
       tag: "Hero Section Component (React + Tailwind)",

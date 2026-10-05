@@ -2356,7 +2356,9 @@ function MyAssets({ assets, onRemove }: { assets: SavedAsset[]; onRemove: (id: s
 
                     {a.type === "brief" && (
                       <p className="mt-2 line-clamp-2 text-xs text-muted-foreground leading-relaxed">
-                        {p?.summary || p?.hero?.subhead || "Comprehensive creative and technical brief"}
+                        {p?.summary ||
+                          p?.hero?.subhead ||
+                          "Comprehensive creative and technical brief"}
                       </p>
                     )}
 
@@ -2489,7 +2491,9 @@ function AssetDetailModal({
                     <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                       Description
                     </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{p.description}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">
+                      {p.description}
+                    </p>
                   </div>
                 )}
                 {p.direction && (
@@ -2497,7 +2501,9 @@ function AssetDetailModal({
                     <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                       Art Direction
                     </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{p.direction}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">
+                      {p.direction}
+                    </p>
                   </div>
                 )}
                 {p.style_explanation && (
@@ -2505,7 +2511,9 @@ function AssetDetailModal({
                     <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                       DNA Alignment
                     </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{p.style_explanation}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">
+                      {p.style_explanation}
+                    </p>
                   </div>
                 )}
                 {p.prompt && (
@@ -2585,10 +2593,14 @@ function AssetDetailModal({
                 ) : p.hero ? (
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-border bg-card p-5">
-                      <span className="font-mono text-[10px] uppercase text-accent font-semibold">Hero Section</span>
+                      <span className="font-mono text-[10px] uppercase text-accent font-semibold">
+                        Hero Section
+                      </span>
                       <p className="mt-1 font-display text-xl italic">{p.hero.headline}</p>
                       <p className="mt-1 text-xs text-muted-foreground">{p.hero.subhead}</p>
-                      {p.hero.cta && <p className="mt-2 font-mono text-[11px] text-accent">CTA: {p.hero.cta}</p>}
+                      {p.hero.cta && (
+                        <p className="mt-2 font-mono text-[11px] text-accent">CTA: {p.hero.cta}</p>
+                      )}
                       {p.hero.visual && (
                         <p className="mt-2 text-xs text-foreground/80 bg-bone/60 p-2.5 rounded-lg">
                           <strong>Art Direction:</strong> {p.hero.visual}
@@ -2607,7 +2619,9 @@ function AssetDetailModal({
                     )}
                     {p.cta && (
                       <div className="rounded-xl border border-border bg-card p-4">
-                        <span className="font-mono text-[10px] uppercase text-accent font-semibold">Call to Action</span>
+                        <span className="font-mono text-[10px] uppercase text-accent font-semibold">
+                          Call to Action
+                        </span>
                         <p className="mt-1 font-display text-lg italic">{p.cta.headline}</p>
                         <p className="mt-1 text-xs text-muted-foreground">{p.cta.body}</p>
                       </div>
@@ -2629,9 +2643,17 @@ function AssetDetailModal({
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                       {p.palette.map((c: any, i: number) => (
-                        <div key={i} className="rounded-xl border border-border bg-card p-3 text-center">
-                          <div className="h-10 w-full rounded-lg shadow-inner" style={{ backgroundColor: c.hex }} />
-                          <p className="mt-2 text-xs font-semibold truncate">{c.name || `Tone ${i + 1}`}</p>
+                        <div
+                          key={i}
+                          className="rounded-xl border border-border bg-card p-3 text-center"
+                        >
+                          <div
+                            className="h-10 w-full rounded-lg shadow-inner"
+                            style={{ backgroundColor: c.hex }}
+                          />
+                          <p className="mt-2 text-xs font-semibold truncate">
+                            {c.name || `Tone ${i + 1}`}
+                          </p>
                           <p className="font-mono text-[10px] text-muted-foreground">{c.hex}</p>
                         </div>
                       ))}
@@ -2641,27 +2663,36 @@ function AssetDetailModal({
                 {p.typography && (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-xl border border-border bg-card p-4">
-                      <span className="font-mono text-[10px] text-muted-foreground uppercase">Display Font</span>
-                      <p className="mt-1 font-display text-lg italic">{p.typography.display || "Serif"}</p>
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                        Display Font
+                      </span>
+                      <p className="mt-1 font-display text-lg italic">
+                        {p.typography.display || "Serif"}
+                      </p>
                     </div>
                     <div className="rounded-xl border border-border bg-card p-4">
-                      <span className="font-mono text-[10px] text-muted-foreground uppercase">Body Font</span>
-                      <p className="mt-1 font-sans text-sm font-medium">{p.typography.body || "Sans-serif"}</p>
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                        Body Font
+                      </span>
+                      <p className="mt-1 font-sans text-sm font-medium">
+                        {p.typography.body || "Sans-serif"}
+                      </p>
                     </div>
                   </div>
                 )}
-                {Array.isArray(p.surface_recommendations) && p.surface_recommendations.length > 0 && (
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
-                      Surface Recommendations
-                    </p>
-                    <ul className="list-disc pl-5 space-y-1.5 text-xs text-foreground/85">
-                      {p.surface_recommendations.map((r: string, idx: number) => (
-                        <li key={idx}>{r}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {Array.isArray(p.surface_recommendations) &&
+                  p.surface_recommendations.length > 0 && (
+                    <div>
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+                        Surface Recommendations
+                      </p>
+                      <ul className="list-disc pl-5 space-y-1.5 text-xs text-foreground/85">
+                        {p.surface_recommendations.map((r: string, idx: number) => (
+                          <li key={idx}>{r}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
               </div>
             )}
 
@@ -2685,8 +2716,15 @@ function AssetDetailModal({
                 {p.images && Object.keys(p.images).length > 0 && (
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                     {Object.entries(p.images).map(([k, imgData]: [string, any]) => (
-                      <div key={k} className="aspect-square overflow-hidden rounded-lg border border-border">
-                        <img src={imgData.url} alt={`Tile ${k}`} className="h-full w-full object-cover" />
+                      <div
+                        key={k}
+                        className="aspect-square overflow-hidden rounded-lg border border-border"
+                      >
+                        <img
+                          src={imgData.url}
+                          alt={`Tile ${k}`}
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                     ))}
                   </div>
@@ -2694,8 +2732,13 @@ function AssetDetailModal({
                 <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
                   {Array.isArray(p.prompts) &&
                     p.prompts.map((pm: string, i: number) => (
-                      <div key={i} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 text-xs">
-                        <span className="font-mono text-accent font-semibold">{String(i + 1).padStart(2, "0")}</span>
+                      <div
+                        key={i}
+                        className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 text-xs"
+                      >
+                        <span className="font-mono text-accent font-semibold">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
                         <p className="flex-1 text-foreground/90 italic font-serif">{pm}</p>
                         <button
                           onClick={() => {
@@ -2715,11 +2758,17 @@ function AssetDetailModal({
             {asset.type === "image" && p?.dataUrl && (
               <div className="space-y-4">
                 <div className="overflow-hidden rounded-2xl border border-border bg-black/10 flex items-center justify-center p-2">
-                  <img src={p.dataUrl} alt={asset.title} className="max-h-[50vh] w-auto object-contain rounded-xl" />
+                  <img
+                    src={p.dataUrl}
+                    alt={asset.title}
+                    className="max-h-[50vh] w-auto object-contain rounded-xl"
+                  />
                 </div>
                 {p.concept?.prompt && (
                   <div>
-                    <p className="font-mono text-[10px] uppercase text-muted-foreground">Original Prompt</p>
+                    <p className="font-mono text-[10px] uppercase text-muted-foreground">
+                      Original Prompt
+                    </p>
                     <p className="mt-1 text-xs text-foreground/80 bg-bone/70 p-3 rounded-xl border border-border font-mono">
                       {p.concept.prompt}
                     </p>

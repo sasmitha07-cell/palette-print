@@ -29,9 +29,7 @@ function createEditorialArtworkSvg(prompt: string, dna?: any, index?: number): s
     Array.isArray(dna?.palette?.hexList) && dna.palette.hexList.length > 0
       ? dna.palette.hexList
       : Array.isArray(dna?.palette)
-        ? dna.palette
-            .map((c: any) => (typeof c === "string" ? c : c?.hex))
-            .filter(Boolean)
+        ? dna.palette.map((c: any) => (typeof c === "string" ? c : c?.hex)).filter(Boolean)
         : ["#04544c", "#fc7c04", "#a89284", "#1a1a1a", "#eae6df"];
 
   const seed = (typeof index === "number" ? index : hashString(prompt)) % 8;
@@ -290,7 +288,10 @@ Design guidelines:
                 }
               }
             } catch (err) {
-              console.warn(`[ai-image] Model ${modelName} failed, trying next candidate:`, err instanceof Error ? err.message : err);
+              console.warn(
+                `[ai-image] Model ${modelName} failed, trying next candidate:`,
+                err instanceof Error ? err.message : err,
+              );
             }
           }
         }

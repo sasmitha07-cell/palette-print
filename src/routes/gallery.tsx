@@ -4,7 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import { EyebrowLabel } from "@/components/site/section-heading";
 import { listDnaProfiles } from "@/lib/dna.functions";
-import { Layers, ImageIcon, BookOpen, Wand2, Palette, FileText, RefreshCw, ExternalLink } from "lucide-react";
+import {
+  Layers,
+  ImageIcon,
+  BookOpen,
+  Wand2,
+  Palette,
+  FileText,
+  RefreshCw,
+  ExternalLink,
+} from "lucide-react";
 import img1 from "@/assets/inspiration-1.jpg";
 import img2 from "@/assets/inspiration-2.jpg";
 import img3 from "@/assets/inspiration-3.jpg";
@@ -43,7 +52,16 @@ type DnaProfile = {
   created_at: string;
 };
 
-const FILTERS = ["All", "Images", "Concepts", "Moodboards", "Briefs", "Prompts", "Brand Kits", "Style DNAs"];
+const FILTERS = [
+  "All",
+  "Images",
+  "Concepts",
+  "Moodboards",
+  "Briefs",
+  "Prompts",
+  "Brand Kits",
+  "Style DNAs",
+];
 const STATIC_IMAGES = [img1, img2, img3, img4, img5, img6, img4, img1, img3, img5, img2, img6];
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
@@ -80,9 +98,7 @@ function AssetCard({ asset, index }: { asset: SavedAsset; index: number }) {
   const payload = asset.payload as Record<string, unknown> | null;
   const imageUrl =
     asset.type === "image"
-      ? (payload?.url as string) ||
-        (payload?.dataUrl as string) ||
-        (payload?.imageUrl as string)
+      ? (payload?.url as string) || (payload?.dataUrl as string) || (payload?.imageUrl as string)
       : null;
 
   return (
@@ -218,8 +234,7 @@ function GalleryPage() {
         ? []
         : assets.filter((a) => a.type === filterKey(activeFilter));
 
-  const filteredDna =
-    activeFilter === "All" || activeFilter === "Style DNAs" ? dnaProfiles : [];
+  const filteredDna = activeFilter === "All" || activeFilter === "Style DNAs" ? dnaProfiles : [];
 
   const totalItems = assets.length + dnaProfiles.length;
   const showStaticFallback = !loading && totalItems === 0;

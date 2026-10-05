@@ -66,7 +66,8 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" })
 
       if (!token) {
         // Fallback demo token
-        token = "demo.header.eyJzdWIiOiIwMDAwMDAwMC0wMDAwLTQwMDAtYTAwMC0wMDAwMDAwMDAwMDEiLCJlbWFpbCI6ImRlc2lnbmVyQHBhbGV0dGVwcmludC5zdHVkaW8ifQ.palette_local_signature";
+        token =
+          "demo.header.eyJzdWIiOiIwMDAwMDAwMC0wMDAwLTQwMDAtYTAwMC0wMDAwMDAwMDAwMDEiLCJlbWFpbCI6ImRlc2lnbmVyQHBhbGV0dGVwcmludC5zdHVkaW8ifQ.palette_local_signature";
       }
       return next({
         headers: {
@@ -131,8 +132,7 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" })
     let isLocal = false;
 
     const isLocalToken =
-      token.endsWith(".palette_dev_signature") ||
-      token.endsWith(".palette_local_signature");
+      token.endsWith(".palette_dev_signature") || token.endsWith(".palette_local_signature");
 
     if (isLocalToken) {
       isLocal = true;

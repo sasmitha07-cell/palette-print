@@ -29,7 +29,7 @@ print("[+] STARTING DATASET TRAINING RUN", flush=True)
 print("=" * 60, flush=True)
 
 # 1. Load dataset as-is
-print(f"[*] Loading raw dataset from: {CSV_PATH}", flush=True)
+print(f"[*] Loading dataset from: {CSV_PATH}", flush=True)
 df = pd.read_csv(CSV_PATH)
 print(f"[*] Total samples loaded: {len(df)}", flush=True)
 print(f"[*] Classes found: {df['source_html'].nunique()} categories", flush=True)
